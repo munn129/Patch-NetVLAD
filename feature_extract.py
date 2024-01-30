@@ -49,8 +49,15 @@ from patchnetvlad.tools.datasets import PlaceDataset
 from patchnetvlad.models.models_generic import get_backend, get_model, get_pca_encoding
 from patchnetvlad.tools import PATCHNETVLAD_ROOT_DIR
 
+import time
+
 
 def feature_extract(eval_set, model, device, opt, config):
+
+    iter_num = 0
+    total_time = 0
+    avr_time = 0
+
     if not exists(opt.output_features_dir):
         makedirs(opt.output_features_dir)
 
@@ -68,8 +75,13 @@ def feature_extract(eval_set, model, device, opt, config):
         tqdm.write('====> Extracting Features')
         db_feat = np.empty((len(eval_set), pool_size), dtype=np.float32)
 
-        for iteration, (input_data, indices) in \
-                enumerate(tqdm(test_data_loader, position=1, leave=False, desc='Test Iter'.rjust(15)), 1):
+        tqdm_instance = tqdm(test_data_loader, position=1, leave=False, desc='Test Iter'.rjust(15))
+
+        for iteration, (input_data, indices) in enumerate(tqdm_instance, 1):
+            
+            iter_num += 1
+            start_time = time.time()
+
             indices_np = indices.detach().numpy()
             input_data = input_data.to(device)
             image_encoding = model.encoder(input_data)
@@ -98,10 +110,18 @@ def feature_extract(eval_set, model, device, opt, config):
                 vlad_global_pca = get_pca_encoding(model, vlad_global)
                 db_feat[indices_np, :] = vlad_global_pca.detach().cpu().numpy()
 
+            end_time = time.time()
+            total_time += end_time - start_time
+            avr_time = total_time/iter_num
+            tqdm_instance.set_postfix(extract_time=avr_time)
+
     np.save(output_global_features_filename, db_feat)
+    print("extract time: {}".format(avr_time))
+    print("Extracting is done ...")
 
 
 def main():
+
     parser = argparse.ArgumentParser(description='Patch-NetVLAD-Feature-Extract')
     parser.add_argument('--config_path', type=str, default=join(PATCHNETVLAD_ROOT_DIR, 'configs/performance.ini'),
                         help='File name (with extension) to an ini file that stores most of the configuration data for patch-netvlad')

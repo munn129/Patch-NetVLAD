@@ -48,13 +48,14 @@ import torch
 import numpy as np
 import faiss
 from tqdm.auto import tqdm
+import csv
 
 from patchnetvlad.tools.datasets import PlaceDataset
 from patchnetvlad.models.local_matcher import local_matcher
 from patchnetvlad.tools import PATCHNETVLAD_ROOT_DIR
 
 
-def compute_recall(gt, predictions, numQ, n_values, recall_str=''):
+def compute_recall(gt, predictions, numQ, n_values,recall_str=''):
     correct_at_n = np.zeros(len(n_values))
     for qIx, pred in enumerate(predictions):
         for i, n in enumerate(n_values):
@@ -67,6 +68,7 @@ def compute_recall(gt, predictions, numQ, n_values, recall_str=''):
     for i, n in enumerate(n_values):
         all_recalls[n] = recall_at_n[i]
         tqdm.write("====> Recall {}@{}: {:.4f}".format(recall_str, n, recall_at_n[i]))
+
     return all_recalls
 
 
@@ -117,9 +119,16 @@ def feature_match(eval_set, device, opt, config):
     # noinspection PyArgumentList
     faiss_index.add(dbFeat)
 
+    # n_value is k
     n_values = []
-    for n_value in config['feature_match']['n_values_all'].split(","):  # remove all instances of n that are bigger than maxK
-        n_values.append(int(n_value))
+    
+    # for n_value in config['feature_match']['n_values_all'].split(","):  # remove all instances of n that are bigger than maxK
+    #     n_values.append(int(n_value))
+    
+    # evaluation code by gym
+    for i in range(1, 101):
+        n_values.append(i)
+    # end
 
     if config['feature_match']['pred_input_path'] != 'None':
         predictions = np.load(config['feature_match']['pred_input_path'])  # optionally load predictions from a np file
@@ -139,6 +148,8 @@ def feature_match(eval_set, device, opt, config):
         else:
             # noinspection PyArgumentList
             _, predictions = faiss_index.search(qFeat, min(len(dbFeat), max(n_values)))
+            print("========== predictions ==========")
+            print(predictions)
 
     reranked_predictions = local_matcher(predictions, eval_set, input_query_local_features_prefix,
                                          input_index_local_features_prefix, config, device)
@@ -154,7 +165,7 @@ def feature_match(eval_set, device, opt, config):
         print('Calculating recalls using ground truth.')
         gt = eval_set.get_positives()
 
-        global_recalls = compute_recall(gt, predictions, eval_set.numQ, n_values, 'NetVLAD')
+        global_recalls = compute_recall(gt, predictions, eval_set.numQ, n_values,'NetVLAD')
         local_recalls = compute_recall(gt, reranked_predictions, eval_set.numQ, n_values, 'PatchNetVLAD')
 
         write_recalls_output(opt, global_recalls, local_recalls, n_values)
