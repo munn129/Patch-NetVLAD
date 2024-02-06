@@ -80,7 +80,6 @@ def feature_extract(eval_set, model, device, opt, config):
         for iteration, (input_data, indices) in enumerate(tqdm_instance, 1):
             
             iter_num += 1
-            start_time = time.time()
 
             indices_np = indices.detach().numpy()
             input_data = input_data.to(device)
@@ -109,11 +108,6 @@ def feature_extract(eval_set, model, device, opt, config):
                 vlad_global = model.pool(image_encoding)
                 vlad_global_pca = get_pca_encoding(model, vlad_global)
                 db_feat[indices_np, :] = vlad_global_pca.detach().cpu().numpy()
-
-            end_time = time.time()
-            total_time += end_time - start_time
-            avr_time = total_time/iter_num
-            tqdm_instance.set_postfix(extract_time=avr_time)
 
     np.save(output_global_features_filename, db_feat)
     print("extract time: {}".format(avr_time))
