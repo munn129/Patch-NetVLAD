@@ -49,13 +49,9 @@ from patchnetvlad.tools.datasets import PlaceDataset
 from patchnetvlad.models.models_generic import get_backend, get_model, get_pca_encoding
 from patchnetvlad.tools import PATCHNETVLAD_ROOT_DIR
 
-import time
-
-
 def feature_extract(eval_set, model, device, opt, config):
 
     iter_num = 0
-    total_time = 0
     avr_time = 0
 
     if not exists(opt.output_features_dir):
