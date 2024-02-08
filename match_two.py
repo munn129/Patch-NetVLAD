@@ -53,8 +53,6 @@ from patchnetvlad.tools.datasets import input_transform
 from patchnetvlad.models.local_matcher import calc_keypoint_centers_from_patches as calc_keypoint_centers_from_patches
 from patchnetvlad.tools import PATCHNETVLAD_ROOT_DIR
 
-import time
-
 def apply_patch_weights(input_scores, num_patches, patch_weights):
     output_score = 0
     if len(patch_weights) != num_patches:
@@ -107,7 +105,6 @@ def match_two(model, device, config, im_one, im_two, plot_save_path):
     input_data = torch.cat((im_one_pil.to(device), im_two_pil.to(device)), 0)
 
     tqdm.write('====> Extracting Features')
-    start_ex = time.time()
     with torch.no_grad():
         image_encoding = model.encoder(input_data)
 
@@ -121,7 +118,6 @@ def match_two(model, device, config, im_one, im_two, plot_save_path):
                 reshape(this_local.size(2), this_local.size(0), pool_size).permute(1, 2, 0)
             local_feats_one.append(torch.transpose(this_local_feats[0, :, :], 0, 1))
             local_feats_two.append(this_local_feats[1, :, :])
-    end_ex = time.time()
 
     tqdm.write('====> Calculating Keypoint Positions')
     patch_sizes = [int(s) for s in config['global_params']['patch_sizes'].split(",")]
@@ -130,7 +126,6 @@ def match_two(model, device, config, im_one, im_two, plot_save_path):
 
     all_keypoints = []
     all_indices = []
-    end_keypoint = time.time()
     tqdm.write('====> Matching Local Features')
     for patch_size, stride in zip(patch_sizes, strides):
         # we currently only provide support for square patches, but this can be easily modified for future works
@@ -143,12 +138,6 @@ def match_two(model, device, config, im_one, im_two, plot_save_path):
 
     scores, inlier_keypoints_one, inlier_keypoints_two = matcher.match(local_feats_one, local_feats_two)
     score = -apply_patch_weights(scores, len(patch_sizes), patch_weights)
-    
-    end_matching = time.time()
-
-    print("ex time:", end_ex - start_ex)
-    print("ket point: ", end_keypoint - end_ex)
-    print("matching :", end_matching - end_keypoint)
 
     print(f"Similarity score between the two images is: {score:.5f}. Larger scores indicate better matches.")
 
