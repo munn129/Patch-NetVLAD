@@ -46,7 +46,6 @@ import cv2
 from PIL import Image
 from matplotlib import pyplot as plt
 
-
 from patchnetvlad.models.models_generic import get_backend, get_model, get_pca_encoding
 from patchnetvlad.tools.patch_matcher import PatchMatcher
 from patchnetvlad.tools.datasets import input_transform

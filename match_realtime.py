@@ -42,11 +42,9 @@ import torch
 import torch.nn as nn
 import cv2
 
-
 from patchnetvlad.models.models_generic import get_backend, get_model
 from patchnetvlad.tools import PATCHNETVLAD_ROOT_DIR
 from match_two import match_two
-
 
 def main():
     parser = argparse.ArgumentParser(description='Patch-NetVLAD-Match-Two')
