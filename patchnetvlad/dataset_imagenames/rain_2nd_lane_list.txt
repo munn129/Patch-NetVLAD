@@ -1,0 +1,16 @@
+rain_2nd_lane/000001.png
+rain_2nd_lane/000002.png
+rain_2nd_lane/000003.png
+rain_2nd_lane/000004.png
+rain_2nd_lane/000005.png
+rain_2nd_lane/000006.png
+rain_2nd_lane/000007.png
+rain_2nd_lane/000008.png
+rain_2nd_lane/000009.png
+rain_2nd_lane/000010.png
+rain_2nd_lane/000011.png
+rain_2nd_lane/000012.png
+rain_2nd_lane/000013.png
+rain_2nd_lane/000014.png
+rain_2nd_lane/000015.png
+rain_2nd_lane/000016.png

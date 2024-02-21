@@ -1,20 +1,35 @@
-python feature_extract.py \
+python feature_match.py \
   --config_path patchnetvlad/configs/mapi_512.ini \
-  --dataset_file_path songdo1024.txt \
-  --dataset_root_dir /patchnetvlad_workspace/songdo1024 \
-  --output_features_dir patchnetvlad/output_features/songdo1024_m512
-
-python feature_extract.py \
-  --config_path patchnetvlad/configs/mapi_512.ini \
-  --dataset_file_path songdo1114.txt \
-  --dataset_root_dir /patchnetvlad_workspace/songdo1114 \
-  --output_features_dir patchnetvlad/output_features/songdo1114_m512
+  --dataset_root_dir /patchnetvlad_workspace \
+  --query_file_path 1024_list.txt \
+  --index_file_path 1114_list.txt \
+  --query_input_features_dir patchnetvlad/output_features/1024 \
+  --index_input_features_dir patchnetvlad/output_features/1114 \
+  --result_save_folder patchnetvlad/results/1024_1114
 
 python feature_match.py \
   --config_path patchnetvlad/configs/mapi_512.ini \
   --dataset_root_dir /patchnetvlad_workspace \
-  --query_file_path songdo1114.txt \
-  --index_file_path songdo1024.txt \
-  --query_input_features_dir patchnetvlad/output_features/songdo1114_p512 \
-  --index_input_features_dir patchnetvlad/output_features/songdo1024_p512 \
-  --result_save_folder patchnetvlad/results/songdo_mapi512
+  --query_file_path rain_full_list.txt \
+  --index_file_path 1114_list.txt \
+  --query_input_features_dir patchnetvlad/output_features/rain_full \
+  --index_input_features_dir patchnetvlad/output_features/1114 \
+  --result_save_folder patchnetvlad/results/rain_full_1114
+
+python feature_match.py \
+  --config_path patchnetvlad/configs/mapi_512.ini \
+  --dataset_root_dir /patchnetvlad_workspace \
+  --query_file_path rain_2nd_lane_list.txt \
+  --index_file_path 1114_list.txt \
+  --query_input_features_dir patchnetvlad/output_features/rain_2nd_lane \
+  --index_input_features_dir patchnetvlad/output_features/1114 \
+  --result_save_folder patchnetvlad/results/rain_2nd_lane_1114
+
+python feature_match.py \
+  --config_path patchnetvlad/configs/mapi_512.ini \
+  --dataset_root_dir /patchnetvlad_workspace \
+  --query_file_path rain_3rd_lane_list.txt \
+  --index_file_path 1114_list.txt \
+  --query_input_features_dir patchnetvlad/output_features/rain_3rd_lane \
+  --index_input_features_dir patchnetvlad/output_features/1114 \
+  --result_save_folder patchnetvlad/results/rain_3rd_lane_1114
