@@ -2,37 +2,37 @@ python feature_extract.py \
   --config_path patchnetvlad/configs/mapi_512.ini \
   --dataset_file_path 1024_1m.txt \
   --dataset_root_dir /patchnetvlad_workspace \
-  --output_features.dir patchnetvlad/output_features/1024_1m
+  --output_features_dir patchnetvlad/output_features/1024_1m
 
 python feature_extract.py \
   --config_path patchnetvlad/configs/mapi_512.ini \
   --dataset_file_path 1024_3m.txt \
   --dataset_root_dir /patchnetvlad_workspace \
-  --output_features.dir patchnetvlad/output_features/1024_3m
+  --output_features_dir patchnetvlad/output_features/1024_3m
 
 python feature_extract.py \
   --config_path patchnetvlad/configs/mapi_512.ini \
   --dataset_file_path 1024_5m.txt \
   --dataset_root_dir /patchnetvlad_workspace \
-  --output_features.dir patchnetvlad/output_features/1024_5m
+  --output_features_dir patchnetvlad/output_features/1024_5m
 
 python feature_extract.py \
   --config_path patchnetvlad/configs/mapi_512.ini \
   --dataset_file_path 1024_7m.txt \
   --dataset_root_dir /patchnetvlad_workspace \
-  --output_features.dir patchnetvlad/output_features/1024_7m
+  --output_features_dir patchnetvlad/output_features/1024_7m
 
 python feature_extract.py \
   --config_path patchnetvlad/configs/mapi_512.ini \
   --dataset_file_path 1024_10m.txt \
   --dataset_root_dir /patchnetvlad_workspace \
-  --output_features.dir patchnetvlad/output_features/1024_10m
+  --output_features_dir patchnetvlad/output_features/1024_10m
 
 python feature_extract.py \
   --config_path patchnetvlad/configs/mapi_512.ini \
   --dataset_file_path 1114.txt \
   --dataset_root_dir /patchnetvlad_workspace \
-  --output_features.dir patchnetvlad/output_features/1114
+  --output_features_dir patchnetvlad/output_features/1114
 
 python feature_match.py \
   --config_path patchnetvlad/configs/mapi_512.ini \
