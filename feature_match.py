@@ -126,6 +126,7 @@ def feature_match(eval_set, device, opt, config):
     #     n_values.append(int(n_value))
     
     # evaluation code by gym
+    # 이부분 11로 바꿔서 할 것
     for i in range(1, 101):
         n_values.append(i)
     # end
