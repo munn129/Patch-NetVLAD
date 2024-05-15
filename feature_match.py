@@ -127,9 +127,10 @@ def feature_match(eval_set, device, opt, config):
     
     # evaluation code by gym
     # 이부분 11로 바꿔서 할 것
-    for i in range(1, 11):
-        n_values.append(i)
+    # for i in range(1, 11):
+    #     n_values.append(i)
     # end
+    n_values.append(1)
 
     if config['feature_match']['pred_input_path'] != 'None':
         predictions = np.load(config['feature_match']['pred_input_path'])  # optionally load predictions from a np file
