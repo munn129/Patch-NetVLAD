@@ -49,6 +49,7 @@ import numpy as np
 import faiss
 from tqdm.auto import tqdm
 import csv
+import time
 
 from patchnetvlad.tools.datasets import PlaceDataset
 from patchnetvlad.models.local_matcher import local_matcher
@@ -217,11 +218,14 @@ def main():
     dataset = PlaceDataset(opt.query_file_path, opt.index_file_path, opt.dataset_root_dir, opt.ground_truth_path,
                            config['feature_extract'], posDistThr=opt.posDistThr)
 
+    start_time = time.time()
     feature_match(dataset, device, opt, config)
+    end_time = time.time() - start_time
 
     torch.cuda.empty_cache()  # garbage clean GPU memory, a bug can occur when Pytorch doesn't automatically clear the
                               # memory after runs
     print('Done')
+    print(f'total time: {end_time}')
 
 
 if __name__ == "__main__":

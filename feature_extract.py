@@ -39,6 +39,8 @@ import os
 from os.path import join, exists, isfile
 from os import makedirs
 
+import time
+
 from tqdm.auto import tqdm
 import torch
 import torch.nn as nn
@@ -67,6 +69,10 @@ def feature_extract(eval_set, model, device, opt, config):
                                   shuffle=False, pin_memory=(not opt.nocuda))
 
     model.eval()
+
+    # processing time evaluation
+    total_time = 0
+
     with torch.no_grad():
         tqdm.write('====> Extracting Features')
         db_feat = np.empty((len(eval_set), pool_size), dtype=np.float32)
@@ -75,6 +81,9 @@ def feature_extract(eval_set, model, device, opt, config):
 
         for iteration, (input_data, indices) in enumerate(tqdm_instance, 1):
             
+            # processing time evaluation
+            start_time = time.time()
+
             iter_num += 1
 
             indices_np = indices.detach().numpy()
@@ -105,8 +114,12 @@ def feature_extract(eval_set, model, device, opt, config):
                 vlad_global_pca = get_pca_encoding(model, vlad_global)
                 db_feat[indices_np, :] = vlad_global_pca.detach().cpu().numpy()
 
+            # processing time evaluation
+            total_time = time.time() - start_time
+
     np.save(output_global_features_filename, db_feat)
-    print("extract time: {}".format(avr_time))
+    # print("extract time: {}".format(avr_time))
+    print(f'average processing time is ... {total_time/iter_num}')
     print("Extracting is done ...")
 
 
