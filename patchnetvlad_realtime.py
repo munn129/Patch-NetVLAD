@@ -12,7 +12,7 @@ from packaging.version import parse as parse_version
 from patchnetvlad.models.patchnetvlad import PatchNetVLAD
 from patchnetvlad.models.frog_models_generic import get_backend ,get_model, get_pca_encoding
 from patchnetvlad.tools.datasets import input_transform
-from patchnetvlad.models.local_matcher import calc_keypoint_centers_from_patches as calc_keypoint_centers_from_patches
+from patchnetvlad.models.local_matcher import calc_keypoint_centers_from_patches
 
 from config import config
 
