@@ -12,12 +12,9 @@ def main():
     if vid.isOpened():
         while True:
             ret, img = vid.read()
-            if ret:
-                cv2.imshow('camera', img)
-                if cv2.waitKey(1) & 0xFF == ord('q'):
-                    break
-            else:
-                break
+            if not(ret): break
+            cv2.imshow('camera', img)
+            if cv2.waitKey(1) & 0xFF == ord('q'): break
 
     vid.release()
     cv2.destroyAllWindows()
