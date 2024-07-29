@@ -1,15 +1,10 @@
 from os.path import isfile
 
 import torch
-import torch.nn as nn
-import torchvision.models as models
-import torchvision
 import cv2
 import numpy as np
 from PIL import Image
 
-from packaging.version import parse as parse_version
-from patchnetvlad.models.patchnetvlad import PatchNetVLAD
 from patchnetvlad.models.frog_models_generic import get_backend ,get_model, get_pca_encoding
 from patchnetvlad.tools.datasets import input_transform
 from patchnetvlad.models.local_matcher import calc_keypoint_centers_from_patches
