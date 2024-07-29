@@ -16,20 +16,6 @@ from patchnetvlad.models.local_matcher import calc_keypoint_centers_from_patches
 
 from config import config
 
-def get_encoder():
-    if parse_version(torchvision.__version__) >= parse_version('0.13'):
-        enc = models.vgg16(weights='IMAGENET1K_V1')
-    else:
-        enc = models.vgg16(pretrained=True)
-
-    layers = list(enc.features.children())[:-2]
-    # only train conv5_1, conv5_2, and conv5_3 (leave rest same as Imagenet trained weights)
-    for layer in layers[:-5]:
-        for p in layer.parameters():
-            p.requires_grad = False
-    enc = nn.Sequential(*layers)
-    return enc
-
 # cuda setting
 cuda = torch.cuda.is_available()
 if not cuda: raise Exception("No CUDA Error")
