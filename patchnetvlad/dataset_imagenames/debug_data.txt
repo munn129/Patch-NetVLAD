@@ -1,0 +1,8 @@
+debug_data/000000.png
+debug_data/000001.png
+debug_data/000002.png
+debug_data/000003.png
+debug_data/000004.png
+debug_data/000005.png
+debug_data/000006.png
+debug_data/000007.png

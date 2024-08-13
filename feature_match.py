@@ -56,23 +56,6 @@ from patchnetvlad.models.local_matcher import local_matcher
 from patchnetvlad.tools import PATCHNETVLAD_ROOT_DIR
 
 
-def compute_recall(gt, predictions, numQ, n_values,recall_str=''):
-    correct_at_n = np.zeros(len(n_values))
-    for qIx, pred in enumerate(predictions):
-        for i, n in enumerate(n_values):
-            # if in top N then also in top NN, where NN > N
-            if np.any(np.in1d(pred[:n], gt[qIx])):
-                correct_at_n[i:] += 1
-                break
-    recall_at_n = correct_at_n / numQ
-    all_recalls = {}  # make dict for output
-    for i, n in enumerate(n_values):
-        all_recalls[n] = recall_at_n[i]
-        tqdm.write("====> Recall {}@{}: {:.4f}".format(recall_str, n, recall_at_n[i]))
-
-    return all_recalls
-
-
 def write_kapture_output(opt, eval_set, predictions, outfile_name):
     if not exists(opt.result_save_folder):
         os.mkdir(opt.result_save_folder)
@@ -87,18 +70,6 @@ def write_kapture_output(opt, eval_set, predictions, outfile_name):
             query_full_path = image_list_array[eval_set.numDb + q_idx]
             for ref_image_name in full_paths:
                 kap_out.write(query_full_path + ', ' + ref_image_name + '\n')
-
-
-def write_recalls_output(opt, recalls_netvlad, recalls_patchnetvlad, n_values):
-    if not exists(opt.result_save_folder):
-        os.mkdir(opt.result_save_folder)
-    outfile = join(opt.result_save_folder, 'recalls.txt')
-    print('Writing recalls to', outfile)
-    with open(outfile, 'w') as rec_out:
-        for n in n_values:
-            rec_out.write("Recall {}@{}: {:.4f}\n".format('NetVLAD', n, recalls_netvlad[n]))
-        for n in n_values:
-            rec_out.write("Recall {}@{}: {:.4f}\n".format('PatchNetVLAD', n, recalls_patchnetvlad[n]))
 
 
 def feature_match(eval_set, device, opt, config):
@@ -136,23 +107,10 @@ def feature_match(eval_set, device, opt, config):
     if config['feature_match']['pred_input_path'] != 'None':
         predictions = np.load(config['feature_match']['pred_input_path'])  # optionally load predictions from a np file
     else:
-        if opt.ground_truth_path and 'tokyo247' in opt.ground_truth_path:
-            print('Tokyo24/7: Selecting only one of the 12 cutouts per panorama')
-            # followed nnSearchPostprocess in https://github.com/Relja/netvlad/blob/master/datasets/dbTokyo247.m
-            # noinspection PyArgumentList
-            _, predictions = faiss_index.search(qFeat, max(n_values) * 12)  # 12 cutouts per panorama
-            predictions_new = []
-            for qIx, pred in enumerate(predictions):
-                _, idx = np.unique(np.floor(pred / 12).astype(np.int), return_index=True)
-                pred = pred[np.sort(idx)]
-                pred = pred[:max(n_values)]
-                predictions_new.append(pred)
-            predictions = np.array(predictions_new)
-        else:
-            # noinspection PyArgumentList
-            _, predictions = faiss_index.search(qFeat, min(len(dbFeat), max(n_values)))
-            print("========== predictions ==========")
-            print(predictions)
+        # noinspection PyArgumentList
+        _, predictions = faiss_index.search(qFeat, min(len(dbFeat), max(n_values)))
+        print("========== predictions ==========")
+        print(predictions)
 
     reranked_predictions = local_matcher(predictions, eval_set, input_query_local_features_prefix,
                                          input_index_local_features_prefix, config, device)
@@ -162,19 +120,6 @@ def feature_match(eval_set, device, opt, config):
     write_kapture_output(opt, eval_set, reranked_predictions, 'PatchNetVLAD_predictions.txt')
 
     print('Finished matching features.')
-
-    # for each query get those within threshold distance
-    if opt.ground_truth_path is not None:
-        print('Calculating recalls using ground truth.')
-        gt = eval_set.get_positives()
-
-        global_recalls = compute_recall(gt, predictions, eval_set.numQ, n_values,'NetVLAD')
-        local_recalls = compute_recall(gt, reranked_predictions, eval_set.numQ, n_values, 'PatchNetVLAD')
-
-        write_recalls_output(opt, global_recalls, local_recalls, n_values)
-    else:
-        print('No ground truth was provided; not calculating recalls.')
-
 
 def main():
     parser = argparse.ArgumentParser(description='Patch-NetVLAD-Feature-Match')

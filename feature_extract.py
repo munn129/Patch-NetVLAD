@@ -51,11 +51,15 @@ from patchnetvlad.tools.datasets import PlaceDataset
 from patchnetvlad.models.models_generic import get_backend, get_model, get_pca_encoding
 from patchnetvlad.tools import PATCHNETVLAD_ROOT_DIR
 
+CONFIG_PATH = 'patchnetvlad/configs/mapi_512.ini'
+DATASET_FILE_PATH = 'debug_data.txt'
+DATASET_ROOT_DIR = '~/Documents/Patch-NetVLAD/patchnetvlad'
+OUTPUT_FEATURES_DIR = 'patchnetvlad/output_features/debug'
+
 def feature_extract(eval_set, model, device, opt, config):
 
     iter_num = 0
-    avr_time = 0
-
+    
     if not exists(opt.output_features_dir):
         makedirs(opt.output_features_dir)
 
@@ -164,11 +168,11 @@ def main():
         resume_ckpt = config['global_params']['resumePath'] + '.pth.tar'
 
     # backup: try whether resume_ckpt is relative to PATCHNETVLAD_ROOT_DIR
+    print(resume_ckpt)
     if not isfile(resume_ckpt):
         resume_ckpt = join(PATCHNETVLAD_ROOT_DIR, resume_ckpt)
         if not isfile(resume_ckpt):
-            from download_models import download_all_models
-            download_all_models(ask_for_permission=True)
+            raise Exception("trained file is not exist")
 
     if isfile(resume_ckpt):
         print("=> loading checkpoint '{}'".format(resume_ckpt))
