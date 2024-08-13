@@ -146,7 +146,6 @@ def main():
     if not cuda: raise Exception("No GPU found")
 
     device = torch.device("cuda" if cuda else "cpu")
-
     encoder_dim, encoder = get_backend()
 
     if not os.path.isfile(opt.dataset_file_path):

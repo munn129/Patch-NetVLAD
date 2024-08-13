@@ -106,10 +106,12 @@ def feature_match(eval_set, device, opt, config):
         # noinspection PyArgumentList
         _, predictions = faiss_index.search(qFeat, min(len(dbFeat), max(n_values)))
 
-    print(predictions)
+    # print(predictions)
 
     reranked_predictions = local_matcher(predictions, eval_set, input_query_local_features_prefix,
                                          input_index_local_features_prefix, config, device)
+
+    print(reranked_predictions)
 
     # save predictions to files - Kapture Output
     write_kapture_output(opt, eval_set, predictions, 'NetVLAD_predictions.txt')

@@ -14,8 +14,6 @@ from patchnetvlad.models.frog_models_generic import get_backend ,get_model, get_
 from patchnetvlad.tools.datasets import input_transform
 from patchnetvlad.models.local_matcher import calc_keypoint_centers_from_patches as calc_keypoint_centers_from_patches
 
-
-
 from config import config
 
 def get_encoder():
@@ -53,7 +51,6 @@ model = model.to(device)
 
 pool_size = int(config['global_params']['num_pcs'])
 
-# single_image = cv2.imread('../songdo1024/00000.png')
 vid = cv2.VideoCapture(0)
 while True:
     _, frame = vid.read()
@@ -69,7 +66,7 @@ while True:
 
     with torch.no_grad():
         image_encoding = model.encoder(input_data)
-        vlad_local, _ = model.pool(image_encoding)
+        vlad_local, vlad_global = model.pool(image_encoding)
         local_feats = []
 
         for _, this_local in enumerate(vlad_local):
