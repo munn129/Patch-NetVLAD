@@ -36,7 +36,6 @@ filepaths pointing to where you saved these datasets (or, edit the text files
 to remove the prefix and insert your own prefix).
 '''
 
-
 from __future__ import print_function
 
 import os
@@ -48,7 +47,6 @@ import torch
 import numpy as np
 import faiss
 from tqdm.auto import tqdm
-import csv
 import time
 
 from patchnetvlad.tools.datasets import PlaceDataset
@@ -59,7 +57,6 @@ def write_kapture_output(opt, eval_set, predictions, outfile_name):
     if not exists(opt.result_save_folder):
         os.mkdir(opt.result_save_folder)
     outfile = join(opt.result_save_folder, outfile_name)
-    print('Writing results to', outfile)
     with open(outfile, 'w') as kap_out:
         kap_out.write('# kapture format: 1.0\n')
         kap_out.write('# query_image, map_image\n')
@@ -108,8 +105,8 @@ def feature_match(eval_set, device, opt, config):
     else:
         # noinspection PyArgumentList
         _, predictions = faiss_index.search(qFeat, min(len(dbFeat), max(n_values)))
-        print("========== predictions ==========")
-        print(predictions)
+
+    print(predictions)
 
     reranked_predictions = local_matcher(predictions, eval_set, input_query_local_features_prefix,
                                          input_index_local_features_prefix, config, device)
@@ -141,8 +138,6 @@ def main():
     parser.add_argument('--nocuda', action='store_true', help='If true, use CPU only. Else use GPU.')
 
     opt = parser.parse_args()
-    print(opt)
-
     configfile = opt.config_path
     assert os.path.isfile(configfile)
     config = configparser.ConfigParser()
@@ -170,7 +165,6 @@ def main():
                               # memory after runs
     print('Done')
     print(f'total time: {end_time}')
-
 
 if __name__ == "__main__":
     main()

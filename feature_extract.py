@@ -149,10 +149,10 @@ def main():
 
     encoder_dim, encoder = get_backend()
 
-    if not os.path.isfile(DATASET_FILE_PATH):
-        DATASET_FILE_PATH = join(PATCHNETVLAD_ROOT_DIR, 'dataset_imagenames', DATASET_FILE_PATH)
+    if not os.path.isfile(opt.dataset_file_path):
+        opt.dataset_file_path = join(opt.dataset_root_dir, 'dataset_imagenames', opt.dataset_file_path)
 
-    dataset = PlaceDataset(None, DATASET_FILE_PATH, opt.dataset_root_dir, None, config['feature_extract'])
+    dataset = PlaceDataset(None, opt.dataset_file_path, opt.dataset_root_dir, None, config['feature_extract'])
 
     # must resume to do extraction
     if config['global_params']['num_pcs'] != '0':
@@ -161,7 +161,6 @@ def main():
         resume_ckpt = config['global_params']['resumePath'] + '.pth.tar'
 
     # backup: try whether resume_ckpt is relative to PATCHNETVLAD_ROOT_DIR
-    print(resume_ckpt)
     if not isfile(resume_ckpt):
         resume_ckpt = join(PATCHNETVLAD_ROOT_DIR, resume_ckpt)
         if not isfile(resume_ckpt):
