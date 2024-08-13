@@ -55,14 +55,6 @@ from patchnetvlad.tools.datasets import PlaceDataset
 from patchnetvlad.models.local_matcher import local_matcher
 from patchnetvlad.tools import PATCHNETVLAD_ROOT_DIR
 
-CONFIG_PATH = 'patchnetvlad/configs/mapi_512.ini'
-DATASET_ROOT_DIR = '~/Documents/Patch-NetVLAD/patchnetvlad'
-QUERY_FILE_PATH = 'debug_data.txt'
-INDEX_FILE_PATH = 'debug_data.txt'
-QUERY_INPUT_FEATURES_DIR = 'patchnetvlad/output_features/debug'
-INDEX_INPUT_FEATURES_DIR = 'patchnetvlad/output_features/debug'
-RESULT_SAVE_FOLDER = 'patchnetvlad/results/debug'
-
 def write_kapture_output(opt, eval_set, predictions, outfile_name):
     if not exists(opt.result_save_folder):
         os.mkdir(opt.result_save_folder)
