@@ -51,11 +51,6 @@ from patchnetvlad.tools.datasets import PlaceDataset
 from patchnetvlad.models.models_generic import get_backend, get_model, get_pca_encoding
 from patchnetvlad.tools import PATCHNETVLAD_ROOT_DIR
 
-CONFIG_PATH = 'patchnetvlad/configs/mapi_512.ini'
-DATASET_FILE_PATH = 'debug_data.txt'
-DATASET_ROOT_DIR = '~/Documents/Patch-NetVLAD/patchnetvlad'
-OUTPUT_FEATURES_DIR = 'patchnetvlad/output_features/debug'
-
 def feature_extract(eval_set, model, device, opt, config):
 
     iter_num = 0
@@ -141,25 +136,23 @@ def main():
     parser.add_argument('--nocuda', action='store_true', help='If true, use CPU only. Else use GPU.')
 
     opt = parser.parse_args()
-    print(opt)
 
     configfile = opt.config_path
     assert os.path.isfile(configfile)
     config = configparser.ConfigParser()
     config.read(configfile)
 
-    cuda = not opt.nocuda
-    if cuda and not torch.cuda.is_available():
-        raise Exception("No GPU found, please run with --nocuda")
+    cuda = torch.cuda.is_available()
+    if not cuda: raise Exception("No GPU found")
 
     device = torch.device("cuda" if cuda else "cpu")
 
     encoder_dim, encoder = get_backend()
 
-    if not os.path.isfile(opt.dataset_file_path):
-        opt.dataset_file_path = join(PATCHNETVLAD_ROOT_DIR, 'dataset_imagenames', opt.dataset_file_path)
+    if not os.path.isfile(DATASET_FILE_PATH):
+        DATASET_FILE_PATH = join(PATCHNETVLAD_ROOT_DIR, 'dataset_imagenames', DATASET_FILE_PATH)
 
-    dataset = PlaceDataset(None, opt.dataset_file_path, opt.dataset_root_dir, None, config['feature_extract'])
+    dataset = PlaceDataset(None, DATASET_FILE_PATH, opt.dataset_root_dir, None, config['feature_extract'])
 
     # must resume to do extraction
     if config['global_params']['num_pcs'] != '0':
