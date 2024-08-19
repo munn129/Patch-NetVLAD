@@ -118,25 +118,38 @@ class Evaluation:
         self._db_list = []
         self._db_filtering()
 
-        self.db_name_list = []
-        self.query_name_list = []
+        self.eval_q_list = [i for i in self.query.get_geo_tag_image_list() if i.get_image_name() in self.result.get_query_list()]
+        # self.eval_r_list = [i for i in self.db.get_geo_tag_image_list() if i.get_image_name() in self._db_list]
+        self.eval_r_list = [self.db.get_geo_tag_image_list()[i] for i in range(len(self._db_list)) if self.db.get_geo_tag_image_list()[i].get_image_name() in self._db_list]
+
+        for i in self._db_list:
+            for j in self.db.get_geo_tag_image_list():
+                if i == j.get_image_name():
+                    self.eval_r_list.append(j)
+
+        self.translation_error = []
+        self.rotation_error = []
 
     def _db_filtering(self) -> None:
-        
         for i in range(len(self.result.get_query_list())):
            self._db_list.append(self.result.get_retrieved_list()[i * self.result.get_retrieval_num()])
 
-    def _filtering(self) -> None:
-        
-        q_name_list_all = []
-        for i in self.query.get_geo_tag_image_list():
-            q_name_list_all.append(i.get_image_name())
+    def error_calculator(self) -> None:
+        for i in range(len(self.eval_q_list)):
+            geotag_q = self.eval_q_list[i]
+            geotag_r = self.eval_r_list[i]
+            self.translation_error.append(gps_to_error(geotag_q.get_latitude(),
+                                                       geotag_q.get_longitude(),
+                                                       geotag_r.get_latitude(),
+                                                       geotag_r.get_longitude()))
+            self.rotation_error.append(geotag_q.get_heading() - geotag_r.get_heading())
+            if self.rotation_error[-1] < 0: self.rotation_error[-1] * -1
 
-        for i in self.result.get_query_list:
-            if i in q_name_list_all:
-                self.query_list.append(i)
-
-
+    def save(self) -> None:
+        with open('kiapi/error.txt', 'a') as file:
+            file.write('tranlation rotation')
+            for i, j in zip(self.translation_error, self.rotation_error):
+                file.write(f'{i} {j}\n')
             
 def main() -> None:
 
@@ -146,8 +159,8 @@ def main() -> None:
     query = GPS(join(dataset, 'q.txt'))
     db = GPS(join(dataset, 'd.txt'))
     eval = Evaluation(result, query, db)
-
-    print(eval._db_list)
+    eval.error_calculator()
+    eval.save()
 
 if __name__ == '__main__':
     main()
