@@ -119,9 +119,7 @@ class Evaluation:
         self._db_filtering()
 
         self.eval_q_list = [i for i in self.query.get_geo_tag_image_list() if i.get_image_name() in self.result.get_query_list()]
-        # self.eval_r_list = [i for i in self.db.get_geo_tag_image_list() if i.get_image_name() in self._db_list]
-        self.eval_r_list = [self.db.get_geo_tag_image_list()[i] for i in range(len(self._db_list)) if self.db.get_geo_tag_image_list()[i].get_image_name() in self._db_list]
-
+        self.eval_r_list = []
         for i in self._db_list:
             for j in self.db.get_geo_tag_image_list():
                 if i == j.get_image_name():
@@ -150,6 +148,15 @@ class Evaluation:
             file.write('tranlation rotation')
             for i, j in zip(self.translation_error, self.rotation_error):
                 file.write(f'{i} {j}\n')
+
+    def for_plot(self) -> None:
+        with open('q_list.txt', 'a') as file:
+            for i in self.eval_q_list:
+                file.write(f'q/{i.get_image_name()}\n')
+        
+        with open('d_list.txt', 'a') as file:
+            for i in self.eval_r_list:
+                file.write(f'd/{i.get_image_name()}\n')
             
 def main() -> None:
 
@@ -159,8 +166,9 @@ def main() -> None:
     query = GPS(join(dataset, 'q.txt'))
     db = GPS(join(dataset, 'd.txt'))
     eval = Evaluation(result, query, db)
-    eval.error_calculator()
-    eval.save()
+    # eval.error_calculator()
+    # eval.save()
+    eval.for_plot()
 
 if __name__ == '__main__':
     main()
