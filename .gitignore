@@ -1,3 +1,5 @@
+*.png
+
 # Custom stuff
 .DS_Store
 .idea
