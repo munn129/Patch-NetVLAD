@@ -45,6 +45,7 @@ def feature_extract(frame, model, device, config):
         vlad_local, vlad_global = model.pool(image_encoding)
 
         vlad_global_pca = get_pca_encoding(model, vlad_global)
+        vlad_global_pca = vlad_global_pca.cpu().numpy()
 
         for _, this_local in enumerate(vlad_local):
 
@@ -54,9 +55,39 @@ def feature_extract(frame, model, device, config):
 
             this_local_pca = get_pca_encoding(model, this_local.permute(2, 0, 1).reshape(-1, this_local.size(1))).\
                 reshape(this_local.size(2), this_local.size(0), pool_size).permute(1, 2, 0)
+            
+            # local patch
             db_feat_patches[grid, :, :] = this_local_pca.detach().cpu().numpy()
 
-    print("Extracting is done ...")
+    # print("Extracting is done ...")
+    return vlad_global_pca, db_feat_patches
+
+def ffeatrue_match(device, opt, config, query_global, query_local):
+    input_index_local_features_prefix = join(opt.index_input_features_dir, 'patchfeats')
+    input_index_global_features_prefix = join(opt.index_input_features_dir, 'globalfeats.npy')
+
+    pool_size = query_global.shape[1]
+    db_features = np.load(input_index_global_features_prefix)
+
+    if db_features.dtype != np.float32:
+        query_global = query_global.astype('float32')
+        db_features = db_features.astype('float32')
+
+    faiss_index = faiss.IndexFlatL2(pool_size)
+    faiss_index.add(db_features)
+
+    retrieval_num = []
+    retrieval_num.append(1)
+
+    _, predictions = faiss_index.search(query_global, min(len(db_features), max(retrieval_num)))
+
+    # print(predictions[0,0])
+
+    # reranked_predictions = local_matcher(predictions, eval_set, input_query_local_features_prefix,
+    #                                      input_index_local_features_prefix, config, device)
+
+    return predictions[0,0]
+    
 
 def feature_match(eval_set, device, opt, config):
     input_query_local_features_prefix = join(opt.query_input_features_dir, 'patchfeats')
@@ -94,6 +125,7 @@ def feature_match(eval_set, device, opt, config):
         predictions = np.load(config['feature_match']['pred_input_path'])  # optionally load predictions from a np file
     else:
         # noinspection PyArgumentList
+        print('a')
         _, predictions = faiss_index.search(qFeat, min(len(dbFeat), max(n_values)))
 
     print(predictions)
@@ -180,12 +212,26 @@ def main():
     else:
         raise FileNotFoundError("=> no checkpoint found at '{}'".format(resume_ckpt))
     
+    dataset_dir = opt.index_file_path
+    dataset_list = []
+
+    with open(join(PATCHNETVLAD_ROOT_DIR, 'dataset_imagenames' ,dataset_dir), 'r') as file:
+        for line in file:
+            dataset_list.append(line[:-1])
+
     vid = cv2.VideoCapture(0)
     while True:
         _, frame = vid.read()
-        feature_extract(frame, model, device, config)
+        global_vlad, patch_vald = feature_extract(frame, model, device, config)
+        n = ffeatrue_match(1,opt,config,global_vlad,patch_vald)
+        # feature_match(dataset, device, opt, config)
 
-        cv2.imshow('frame', frame)
+        retrieved_img = cv2.imread(join(PATCHNETVLAD_ROOT_DIR, dataset_list[n]), cv2.IMREAD_COLOR)
+        h, w, _ = frame.shape
+        retrieved_img = cv2.resize(retrieved_img, (w,h))
+        concatened = np.hstack((frame, retrieved_img))
+
+        cv2.imshow('frame', concatened)
         if cv2.waitKey(1) & 0xFF == ord('q'): break
 
     vid.release()
