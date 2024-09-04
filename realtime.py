@@ -79,9 +79,9 @@ def ffeatrue_match(device, opt, config, query_global, query_local):
     retrieval_num = []
     retrieval_num.append(1)
 
-    _, predictions = faiss_index.search(query_global, min(len(db_features), max(retrieval_num)))
+    distance , predictions = faiss_index.search(query_global, min(len(db_features), max(retrieval_num)))
 
-    # print(predictions[0,0])
+    print(f'distance: {distance}, prediction: {predictions[0,0]}')
 
     # reranked_predictions = local_matcher(predictions, eval_set, input_query_local_features_prefix,
     #                                      input_index_local_features_prefix, config, device)
@@ -138,26 +138,26 @@ def feature_match(eval_set, device, opt, config):
 def main():
     
     parser = argparse.ArgumentParser(description='Patch-NetVLAD-Feature-Extract')
-    parser.add_argument('--config_path', type=str, default=join(PATCHNETVLAD_ROOT_DIR, 'configs/performance.ini'),
+    parser.add_argument('--config_path', type=str, default='patchnetvlad/configs/mapi_512.ini',
                         help='File name (with extension) to an ini file that stores most of the configuration data for patch-netvlad')
-    parser.add_argument('--dataset_file_path', type=str, required=True,
+    parser.add_argument('--dataset_file_path', type=str, required=False, default='webcam.txt',
                         help='Full path (with extension) to a text file that stores the save location and name of all images in the dataset folder')
-    parser.add_argument('--dataset_root_dir', type=str, default='',
+    parser.add_argument('--dataset_root_dir', type=str, default='~/Documents/Patch-NetVLAD/patchnetvlad',
                         help='If the files in dataset_file_path are relative, use dataset_root_dir as prefix.')
-    parser.add_argument('--output_features_dir', type=str, default=join(PATCHNETVLAD_ROOT_DIR, 'output_features'),
+    parser.add_argument('--output_features_dir', type=str, default='patchnetvlad/output_features/webcam',
                         help='Path to store all patch-netvlad features')
     parser.add_argument('--nocuda', action='store_true', help='If true, use CPU only. Else use GPU.')
 
-    parser.add_argument('--query_file_path', type=str, required=True,
+    parser.add_argument('--query_file_path', type=str, required=False, default='webcam.txt',
                         help='Path (with extension) to a text file that stores the save location and name of all query images in the dataset')
-    parser.add_argument('--index_file_path', type=str, required=True,
+    parser.add_argument('--index_file_path', type=str, required=False, default='webcam.txt',
                         help='Path (with extension) to a text file that stores the save location and name of all database images in the dataset')
-    parser.add_argument('--query_input_features_dir', type=str, required=True,
+    parser.add_argument('--query_input_features_dir', type=str, required=False, default='patchnetvlad/output_features/webcam',
                         help='Path to load all query patch-netvlad features')
-    parser.add_argument('--index_input_features_dir', type=str, required=True,
+    parser.add_argument('--index_input_features_dir', type=str, required=False, default='patchnetvlad/output_features/webcam',
                         help='Path to load all database patch-netvlad features')
 
-    parser.add_argument('--result_save_folder', type=str, default='results')
+    parser.add_argument('--result_save_folder', type=str, default='patchnetvlad/results/webcam')
 
     opt = parser.parse_args()
     configfile = opt.config_path
@@ -174,7 +174,7 @@ def main():
     if not os.path.isfile(opt.dataset_file_path):
         opt.dataset_file_path = join(opt.dataset_root_dir, 'dataset_imagenames', opt.dataset_file_path)
 
-    dataset = PlaceDataset(None, opt.dataset_file_path, opt.dataset_root_dir, None, config['feature_extract'])
+    # dataset = PlaceDataset(None, opt.dataset_file_path, opt.dataset_root_dir, None, config['feature_extract'])
 
     # must resume to do extraction
     if config['global_params']['num_pcs'] != '0':
