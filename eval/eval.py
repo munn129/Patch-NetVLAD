@@ -145,7 +145,7 @@ class Evaluation:
 
     def save(self) -> None:
         with open('kiapi/error.txt', 'a') as file:
-            file.write('tranlation rotation')
+            file.write('tranlation rotation\n')
             for i, j in zip(self.translation_error, self.rotation_error):
                 file.write(f'{i} {j}\n')
 
