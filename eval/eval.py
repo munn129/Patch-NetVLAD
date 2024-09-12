@@ -149,6 +149,10 @@ class Evaluation:
             for i, j in zip(self.translation_error, self.rotation_error):
                 file.write(f'{i} {j}\n')
 
+    def error_analysis(self) -> None:
+        print(f'Average translation error: {sum(self.translation_error)/len(self.translation_error)}')
+        print(f'Average rotation error: {sum(self.rotation_error)/len(self.rotation_error)}')
+
     def for_plot(self) -> None:
         with open('q_list.txt', 'a') as file:
             for i in self.eval_q_list:
@@ -160,14 +164,20 @@ class Evaluation:
             
 def main() -> None:
 
-    dataset = 'oxford_concat'
+    position = 'concat'
+    dataset = f'oxford_{position}'
+    patch = False
 
-    result = Result(dataset,False)
-    query = GPS(join(dataset, '0514_concat_gt.txt'))
-    db = GPS(join(dataset, '0626_concat_gt.txt'))
+    result = Result(dataset, patch)
+    query = GPS(join(dataset, f'0514_{position}_gt.txt'))
+    db = GPS(join(dataset, f'0626_{position}_gt.txt'))
     eval = Evaluation(result, query, db)
     eval.error_calculator()
-    eval.save(f'{dataset}/netvlad_error.txt')
+    if patch:
+        eval.save(f'{dataset}/patch_error.txt')
+    else:
+        eval.save(f'{dataset}/netvlad_error.txt')
+    eval.error_analysis()
     # eval.for_plot()
 
 if __name__ == '__main__':
