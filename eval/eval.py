@@ -143,8 +143,8 @@ class Evaluation:
             self.rotation_error.append(geotag_q.get_heading() - geotag_r.get_heading())
             if self.rotation_error[-1] < 0: self.rotation_error[-1] * -1
 
-    def save(self) -> None:
-        with open('kiapi/error.txt', 'a') as file:
+    def save(self, dir) -> None:
+        with open(dir, 'a') as file:
             file.write('tranlation rotation\n')
             for i, j in zip(self.translation_error, self.rotation_error):
                 file.write(f'{i} {j}\n')
@@ -160,15 +160,15 @@ class Evaluation:
             
 def main() -> None:
 
-    dataset = 'kiapi'
+    dataset = 'oxford_concat'
 
-    result = Result(dataset)
-    query = GPS(join(dataset, 'q.txt'))
-    db = GPS(join(dataset, 'd.txt'))
+    result = Result(dataset,False)
+    query = GPS(join(dataset, '0514_concat_gt.txt'))
+    db = GPS(join(dataset, '0626_concat_gt.txt'))
     eval = Evaluation(result, query, db)
-    # eval.error_calculator()
-    # eval.save()
-    eval.for_plot()
+    eval.error_calculator()
+    eval.save(f'{dataset}/netvlad_error.txt')
+    # eval.for_plot()
 
 if __name__ == '__main__':
     main()

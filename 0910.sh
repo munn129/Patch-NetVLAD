@@ -1,61 +1,61 @@
 python feature_extract.py \
   --config_path patchnetvlad/configs/mapi_512.ini \
   --dataset_file_path oxford/0514_concat_imagenames.txt \
-  --dataset_root_dir /media/moon/moon_ssd/moon ubuntu/post_oxford \
+  --dataset_root_dir /media/moon/moon_ssd/moon\ ubuntu/post_oxford \
   --output_features_dir patchnetvlad/output_features/oxford_multiview/0514_concat
 
 python feature_extract.py \
   --config_path patchnetvlad/configs/mapi_512.ini \
   --dataset_file_path oxford/0514_front_imagenames.txt \
-  --dataset_root_dir /media/moon/moon_ssd/moon ubuntu/post_oxford \
+  --dataset_root_dir /media/moon/moon_ssd/moon\ ubuntu/post_oxford \
   --output_features_dir patchnetvlad/output_features/oxford_multiview/0514_front
 
 python feature_extract.py \
   --config_path patchnetvlad/configs/mapi_512.ini \
   --dataset_file_path oxford/0514_left_imagenames.txt \
-  --dataset_root_dir /media/moon/moon_ssd/moon ubuntu/post_oxford \
+  --dataset_root_dir /media/moon/moon_ssd/moon\ ubuntu/post_oxford \
   --output_features_dir patchnetvlad/output_features/oxford_multiview/0514_left
 
 python feature_extract.py \
   --config_path patchnetvlad/configs/mapi_512.ini \
   --dataset_file_path oxford/0514_rear_imagenames.txt \
-  --dataset_root_dir /media/moon/moon_ssd/moon ubuntu/post_oxford \
+  --dataset_root_dir /media/moon/moon_ssd/moon\ ubuntu/post_oxford \
   --output_features_dir patchnetvlad/output_features/oxford_multiview/0514_rear
 
   python feature_extract.py \
   --config_path patchnetvlad/configs/mapi_512.ini \
   --dataset_file_path oxford/0514_right_imagenames.txt \
-  --dataset_root_dir /media/moon/moon_ssd/moon ubuntu/post_oxford \
+  --dataset_root_dir /media/moon/moon_ssd/moon\ ubuntu/post_oxford \
   --output_features_dir patchnetvlad/output_features/oxford_multiview/0514_right
 
 python feature_extract.py \
   --config_path patchnetvlad/configs/mapi_512.ini \
   --dataset_file_path oxford/0626_concat_imagenames.txt \
-  --dataset_root_dir /media/moon/moon_ssd/moon ubuntu/post_oxford \
+  --dataset_root_dir /media/moon/moon_ssd/moon\ ubuntu/post_oxford \
   --output_features_dir patchnetvlad/output_features/oxford_multiview/0626_concat
 
 python feature_extract.py \
   --config_path patchnetvlad/configs/mapi_512.ini \
   --dataset_file_path oxford/0626_front_imagenames.txt \
-  --dataset_root_dir /media/moon/moon_ssd/moon ubuntu/post_oxford \
+  --dataset_root_dir /media/moon/moon_ssd/moon\ ubuntu/post_oxford \
   --output_features_dir patchnetvlad/output_features/oxford_multiview/0626_front
 
 python feature_extract.py \
   --config_path patchnetvlad/configs/mapi_512.ini \
   --dataset_file_path oxford/0626_left_imagenames.txt \
-  --dataset_root_dir /media/moon/moon_ssd/moon ubuntu/post_oxford \
+  --dataset_root_dir /media/moon/moon_ssd/moon\ ubuntu/post_oxford \
   --output_features_dir patchnetvlad/output_features/oxford_multiview/0626_left
 
 python feature_extract.py \
   --config_path patchnetvlad/configs/mapi_512.ini \
   --dataset_file_path oxford/0626_rear_imagenames.txt \
-  --dataset_root_dir /media/moon/moon_ssd/moon ubuntu/post_oxford \
+  --dataset_root_dir /media/moon/moon_ssd/moon\ ubuntu/post_oxford \
   --output_features_dir patchnetvlad/output_features/oxford_multiview/0626_rear
 
   python feature_extract.py \
   --config_path patchnetvlad/configs/mapi_512.ini \
   --dataset_file_path oxford/0626_right_imagenames.txt \
-  --dataset_root_dir /media/moon/moon_ssd/moon ubuntu/post_oxford \
+  --dataset_root_dir /media/moon/moon_ssd/moon\ ubuntu/post_oxford \
   --output_features_dir patchnetvlad/output_features/oxford_multiview/0626_right
 
   python feature_match.py \
