@@ -166,7 +166,7 @@ def main() -> None:
 
     position = 'concat'
     dataset = f'oxford_{position}'
-    patch = False
+    patch = True
 
     result = Result(dataset, patch)
     query = GPS(join(dataset, f'0514_{position}_gt.txt'))

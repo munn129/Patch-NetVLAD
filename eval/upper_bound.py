@@ -5,6 +5,7 @@ calculate upper bound of translation error
 import os
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
+import matplotlib.pyplot as plt
 from tqdm import tqdm
 
 def gps_to_error(lat1, lon1, lat2, lon2):
@@ -43,16 +44,37 @@ def main():
 
     error = []
 
-    for query in tqdm(query_gps_list):
-        upper_bound = 9999
-        for dataset in dataset_gps_list:
-            e = gps_to_error(float(query[1]), float(query[2]), float(dataset[1]), float(dataset[2]))
-            if e < upper_bound:
-                upper_bound = e
+    
+    # for query in tqdm(query_gps_list):
+    #     upper_bound = 9999
+    #     for dataset in dataset_gps_list:
+    #         e = gps_to_error(float(query[1]), float(query[2]), float(dataset[1]), float(dataset[2]))
+    #         if e < upper_bound:
+    #             upper_bound = e
         
-        error.append(upper_bound)
+    #     error.append(upper_bound)
 
-    print(sum(error)/len(error))
+    # print(sum(error)/len(error))
+
+    query_lat_plot_list = []
+    query_lon_plot_list = []
+    dataset_lat_plot_list = []
+    dataset_lon_plot_list = []
+
+    for query in query_gps_list:
+        query_lat_plot_list.append(query[1])
+        query_lon_plot_list.append(query[2])
+
+    for dataset in dataset_gps_list:
+        dataset_lat_plot_list.append(dataset[1])
+        dataset_lon_plot_list.append(dataset[2])
+
+    plt.scatter(query_lat_plot_list, query_lon_plot_list,s = 10, c = '#FF3213')
+    plt.scatter(dataset_lat_plot_list, dataset_lon_plot_list, s = 1, c = '#123344')
+
+    plt.axis('off')
+
+    plt.show()
 
 if __name__ == '__main__':
     main()
