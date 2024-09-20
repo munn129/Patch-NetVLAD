@@ -151,6 +151,13 @@ class Evaluation:
                 file.write(f'{i} {j}\n')
 
     def error_analysis(self) -> None:
+        '''
+        TODO
+        translation error, rotation error
+        + by range -> have to find critia
+        recall rate: translation, rotation, both
+        Pearson correlation coefficient -> environment diagram
+        '''
         print(f'Average translation error: {sum(self.translation_error)/len(self.translation_error)}')
         print(f'Average rotation error: {sum(self.rotation_error)/len(self.rotation_error)}')
 
