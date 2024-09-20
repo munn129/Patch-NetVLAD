@@ -26,8 +26,8 @@ def main():
     
     position = 'concat'
     prefix = f'oxford_{position}'
-    query_gt = os.path.join(prefix, f'0514_{position}_gt.txt')
-    dataset_gt = os.path.join(prefix, f'0626_{position}_gt.txt')
+    query_gt = os.path.join(prefix, f'0519_{position}_gt.txt')
+    dataset_gt = os.path.join(prefix, f'0828_{position}_gt.txt')
 
     query_gps_list = []
     dataset_gps_list = []
@@ -45,29 +45,29 @@ def main():
     error = []
 
     
-    # for query in tqdm(query_gps_list):
-    #     upper_bound = 9999
-    #     for dataset in dataset_gps_list:
-    #         e = gps_to_error(float(query[1]), float(query[2]), float(dataset[1]), float(dataset[2]))
-    #         if e < upper_bound:
-    #             upper_bound = e
+    for query in tqdm(query_gps_list):
+        upper_bound = 9999
+        for dataset in dataset_gps_list:
+            e = gps_to_error(float(query[1]), float(query[2]), float(dataset[1]), float(dataset[2]))
+            if e < upper_bound:
+                upper_bound = e
         
-    #     error.append(upper_bound)
+        error.append(upper_bound)
 
-    # print(sum(error)/len(error))
+    print(sum(error)/len(error))
 
     query_lat_plot_list = []
     query_lon_plot_list = []
     dataset_lat_plot_list = []
     dataset_lon_plot_list = []
 
-    for query in query_gps_list:
-        query_lat_plot_list.append(query[1])
-        query_lon_plot_list.append(query[2])
+    # for query in query_gps_list:
+    #     query_lat_plot_list.append(query[1])
+    #     query_lon_plot_list.append(query[2])
 
-    for dataset in dataset_gps_list:
-        dataset_lat_plot_list.append(dataset[1])
-        dataset_lon_plot_list.append(dataset[2])
+    # for dataset in dataset_gps_list:
+    #     dataset_lat_plot_list.append(dataset[1])
+    #     dataset_lon_plot_list.append(dataset[2])
 
     plt.scatter(query_lat_plot_list, query_lon_plot_list,s = 10, c = '#FF3213')
     plt.scatter(dataset_lat_plot_list, dataset_lon_plot_list, s = 1, c = '#123344')
