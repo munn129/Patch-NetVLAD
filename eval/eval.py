@@ -140,12 +140,13 @@ class Evaluation:
                                                        geotag_q.get_longitude(),
                                                        geotag_r.get_latitude(),
                                                        geotag_r.get_longitude()))
-            self.rotation_error.append(geotag_q.get_heading() - geotag_r.get_heading())
-            if self.rotation_error[-1] < 0: self.rotation_error[-1] * -1
+            self.rotation_error.append(abs(abs(geotag_q.get_heading()) - abs(geotag_r.get_heading())))
 
     def save(self, dir) -> None:
-        with open(dir, 'a') as file:
+        with open(dir, 'w') as file:
             file.write('tranlation rotation\n')
+        
+        with open(dir, 'a') as file:
             for i, j in zip(self.translation_error, self.rotation_error):
                 file.write(f'{i} {j}\n')
 
