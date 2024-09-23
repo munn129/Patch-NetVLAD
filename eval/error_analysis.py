@@ -21,7 +21,7 @@ def dictionary_updater(cnt_dict, critia) -> None:
     try:
         cnt_dict[critia] += 1
     except:
-        cnt_dict[critia] = 0
+        cnt_dict[critia] = 1
 
 def main():
     condition = 'front'
@@ -72,7 +72,7 @@ def main():
     for i in cnt_dict:
         # checker = str(i).split('_')
         
-        print(f'recall rate @ {i}: {cnt_dict[i]/len(t_err_check_list) / 100} %')
+        print(f'recall rate @ {i}: {cnt_dict[i]/len(translation_error_list) *100} %')
 
 if __name__ == '__main__':
     main()
