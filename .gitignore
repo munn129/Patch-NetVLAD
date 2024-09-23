@@ -1,5 +1,6 @@
 *.png
 *.txt
+*.html
 # Custom stuff
 .DS_Store
 .idea
