@@ -12,8 +12,18 @@ def gps_to_error(lat1, lon1, lat2, lon2):
 
     return d * 1000 #meter
 
+def dictionary_updater(cnt_dict, critia) -> None:
+    try:
+        cnt_dict[critia] += 1
+    except:
+        cnt_dict[critia] = 0
+
 def main():
-    print(gps_to_error(51.76606, -1.256205, 51.765594, -1.25834))
+    tmp_dict ={}
+
+    tmp_dict['1m'] = 1
+    dictionary_updater(tmp_dict, 'das')
+    print(tmp_dict)
 
 if __name__ == '__main__':
     main()

@@ -144,7 +144,7 @@ class Evaluation:
 
     def save(self, dir) -> None:
         with open(dir, 'w') as file:
-            file.write('tranlation rotation\n')
+            file.write('# tranlation rotation\n')
         
         with open(dir, 'a') as file:
             for i, j in zip(self.translation_error, self.rotation_error):
