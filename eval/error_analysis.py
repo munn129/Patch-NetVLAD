@@ -24,10 +24,12 @@ def dictionary_updater(cnt_dict, critia) -> None:
         cnt_dict[critia] = 1
 
 def main():
-    condition = 'front'
+    condition = 'concat'
     vlad = 'patch'
-    t_err_check_list = [0.25, 0.5, 1, 5, 10, 9999]
-    r_err_check_list = [1, 2, 5, 10, 20, 9999]
+
+    # both lists must have same length
+    t_err_check_list = [0.25, 0.5, 1, 5, 10]
+    r_err_check_list = [0.25, 0.5, 1, 5, 10]
 
     folder = f'oxford_{condition}'
     file = f'{vlad}_error.txt'
@@ -70,9 +72,9 @@ def main():
                     dictionary_updater(cnt_dict, f'{str(t)}_m_and_{str(r)}_degree')
 
     for i in cnt_dict:
-        # checker = str(i).split('_')
-        
         print(f'recall rate @ {i}: {cnt_dict[i]/len(translation_error_list) *100} %')
+
+    # plot tendency
 
 if __name__ == '__main__':
     main()
