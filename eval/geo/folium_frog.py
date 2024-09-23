@@ -20,13 +20,6 @@ with open(gps_2, 'r') as file:
         line = line.split(' ')
         gps_2_list.append((line[1], line[2]))  # (lon, lat)
 
-# print(len(gps_1_list))
-# print(len(gps_2_list))
-
-# 데이터 샘플링
-# gps_1_list = gps_1_list[4000:]
-# gps_2_list = gps_2_list[5000:]
-
 # 지도 생성
 m = folium.Map(location=[51.757, -1.263], zoom_start=15, tiles="CartoDB positron")
 
