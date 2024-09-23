@@ -5,7 +5,8 @@ import os
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 import matplotlib.pyplot as plt
-from sklearn.cluster import KMeans
+from sklearn.cluster import DBSCAN
+import numpy as np
 
 
 '''
@@ -83,21 +84,32 @@ def main():
     for t, r in zip(translation_error_list, rotation_error_list):
         X.append([t, r])
 
-    # k-means clustering
-    k_means = KMeans(n_clusters = 3,
-                     init = 'random')
-    k_means.fit_predict(X)
+    # Convert to numpy array for DBSCAN
+    X = np.array(X)
 
-    print(f'k_means centroid: translation: {k_means.cluster_centers_[:,0]}, rotation: {k_means.cluster_centers_[:,1]}')
+    # DBSCAN clustering
+    dbscan = DBSCAN(eps=0.001, min_samples=5)
+    labels = dbscan.fit_predict(X)
+
+    # Extract core samples (centroids for DBSCAN are not directly available)
+    core_samples_mask = np.zeros_like(labels, dtype=bool)
+    core_samples_mask[dbscan.core_sample_indices_] = True
+    unique_labels = set(labels)
+
+    # Calculate average error
     print(f'average error: translation: {sum(translation_error_list)/len(translation_error_list)}, rotation: {sum(rotation_error_list)/len(rotation_error_list)}')
 
-    # plot errors
+    # Plot errors
     plt.scatter(rotation_error_list, translation_error_list, alpha=0.01)
 
-    # plot centroid
-    plt.scatter(k_means.cluster_centers_[:, 0],
-                k_means.cluster_centers_[:,1],
-                marker = '*')
+    # Plot DBSCAN core samples as centroids (just for visualization)
+    colors = plt.cm.Spectral(np.linspace(0, 1, len(unique_labels)))
+    for k, col in zip(unique_labels, colors):
+        if k == -1:
+            col = 'k'  # Black used for noise
+        class_member_mask = (labels == k)
+        xy = X[class_member_mask & core_samples_mask]
+        plt.plot(xy[:, 1], xy[:, 0], 'o', markerfacecolor=col, markeredgecolor='k', markersize=14)
 
     plt.axis('scaled')
     plt.show()

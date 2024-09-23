@@ -61,13 +61,13 @@ def main():
     dataset_lat_plot_list = []
     dataset_lon_plot_list = []
 
-    # for query in query_gps_list:
-    #     query_lat_plot_list.append(query[1])
-    #     query_lon_plot_list.append(query[2])
+    for query in query_gps_list:
+        query_lat_plot_list.append(query[1])
+        query_lon_plot_list.append(query[2])
 
-    # for dataset in dataset_gps_list:
-    #     dataset_lat_plot_list.append(dataset[1])
-    #     dataset_lon_plot_list.append(dataset[2])
+    for dataset in dataset_gps_list:
+        dataset_lat_plot_list.append(dataset[1])
+        dataset_lon_plot_list.append(dataset[2])
 
     plt.scatter(query_lat_plot_list, query_lon_plot_list,s = 10, c = '#FF3213')
     plt.scatter(dataset_lat_plot_list, dataset_lon_plot_list, s = 1, c = '#123344')
