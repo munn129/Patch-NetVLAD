@@ -27,8 +27,8 @@ def dictionary_updater(cnt_dict, critia) -> None:
         cnt_dict[critia] = 1
 
 def main():
-    condition = 'concat'
-    vlad = 'patch'
+    direction = 'concat'
+    method = 'patch'
 
     # both lists must have same length
     t_err_check_list = [0.25, 0.5, 5]
@@ -36,8 +36,8 @@ def main():
     if len(t_err_check_list) != len(r_err_check_list):
         raise Exception('check lists are not same length')
 
-    folder = f'oxford_{condition}'
-    file = f'{vlad}_error.txt'
+    folder = f'oxford_{direction}'
+    file = f'{method}_error.txt'
     error_result_dir = os.path.join(folder, file)
 
     translation_error_list = []
@@ -73,9 +73,17 @@ def main():
                 if translation_error < float(t) and rotation_error < float(r):
                     dictionary_updater(cnt_dict, f'{str(t)}_m_and_{str(r)}_degree')
 
-    print(f'########## Result of {error_result_dir} ##########')
-    for i in cnt_dict:
-        print(f'recall rate @ {i}: {cnt_dict[i]/len(translation_error_list) *100} %')
+    print(f'########## Result of {error_result_dir} ##########')        
+    with open(f'{direction}_{method}.txt', 'w') as file:
+        # recall rate
+        for i in cnt_dict:
+            sentence = f'recall rate @ {i}: {cnt_dict[i]/len(translation_error_list) *100} %'
+            file.write(f'{sentence}\n')
+            print(sentence)
+
+        # translation error
+
+    print(f'{direction}_{method} is saved')
 
 if __name__ == '__main__':
     main()
