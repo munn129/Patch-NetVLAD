@@ -3,9 +3,12 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 import folium
 
-gps_1 = '../oxford_concat/0519_concat_gt.txt'
-gps_2 = '../oxford_concat/0828_concat_gt.txt'
-error = '../oxford_concat/patch_error.txt'
+direction = 'concat'
+method = 'patch'
+
+gps_1 = f'../oxford_{direction}/0519_{direction}_gt.txt'
+gps_2 = f'../oxford_{direction}/0828_{direction}_gt.txt'
+error = f'../oxford_{direction}/{method}_error.txt'
 
 gps_1_list = []
 gps_2_list = []
@@ -35,20 +38,22 @@ m = folium.Map(location=[51.757, -1.263], zoom_start=15, tiles="CartoDB positron
 for coord in gps_2_list:
     folium.CircleMarker(
         location=coord,
-        radius=3,
+        radius=0.5,
+        stroke = False,
         color='blue',
         fill=True,
-        fill_opacity=0.1,
+        fill_opacity=1,
         # popup=str(coord)
     ).add_to(m)
 
 for coord in gps_1_list:
     folium.CircleMarker(
             location=coord,
-            radius=3,
+            radius=0.5,
+            stroke = False,
             color='red',
             fill=True,
-            fill_opacity=0.1,
+            fill_opacity=1,
             # popup=str(coord)
         ).add_to(m)
     
@@ -57,12 +62,14 @@ for coord, err in zip(gps_1_list, error_list):
     if err > 50:
         folium.CircleMarker(
             location=coord,
-            radius=10,
+            radius=1.5,
+            # stroke = False,
             color='green',
-            fill=True,
+            fill=False,
             fill_opacity=0.1,
             # popup=str(coord)
         ).add_to(m)
 
 # 지도 HTML로 저장
-m.save("map.html")
+m.save(f'../../{direction}_{method}_map.html')
+print(f'../../{direction}_{method}_map.html is saved')
