@@ -71,5 +71,5 @@ for coord, err in zip(gps_1_list, error_list):
         ).add_to(m)
 
 # 지도 HTML로 저장
-m.save(f'../../{direction}_{method}_map.html')
-print(f'../../{direction}_{method}_map.html is saved')
+m.save(f'{direction}_{method}_map.html')
+print(f'{direction}_{method}_map.html is saved')
