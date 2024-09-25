@@ -77,5 +77,31 @@ def main():
     for i in cnt_dict:
         print(f'recall rate @ {i}: {cnt_dict[i]/len(translation_error_list) *100} %')
 
+    # plot tendency
+
+    X = []
+    for t, r in zip(translation_error_list, rotation_error_list):
+        X.append([t, r])
+
+    # k-means clustering
+    k_means = KMeans(n_clusters = 3,
+                     init = 'random')
+    k_means.fit_predict(X)
+
+    print(f'k_means centroid: translation: {k_means.cluster_centers_[:,0]}, rotation: {k_means.cluster_centers_[:,1]}')
+    print(f'average error: translation: {sum(translation_error_list)/len(translation_error_list)}, rotation: {sum(rotation_error_list)/len(rotation_error_list)}')
+
+    # plot errors
+    plt.scatter(rotation_error_list, translation_error_list, alpha=0.01)
+
+    # plot centroid
+    plt.scatter(k_means.cluster_centers_[:, 0],
+                k_means.cluster_centers_[:,1],
+                marker = '*')
+
+    plt.axis('scaled')
+    plt.show()
+
+
 if __name__ == '__main__':
     main()
