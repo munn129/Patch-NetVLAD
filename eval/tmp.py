@@ -1,28 +1,32 @@
-def gps_to_error(lat1, lon1, lat2, lon2):
-    from math import pi, sin, cos, sqrt, atan2
+import numpy as np
+import matplotlib.pyplot as plt
 
-    # 지구의 넓이 반지름
-    R = 6371.0072 # radius of the earth in KM
-    lat_to_deg = lat2 * pi/180 - lat1 * pi/180
-    long_to_deg = lon2 * pi/180 - lon1 * pi/180
+# 예시 데이터 생성 (에러 값)
+N = 100
 
-    a = sin(lat_to_deg/2)**2 + cos(lat1 * pi/180) * cos(lat2 * pi/180) * sin(long_to_deg/2)**2
-    c = 2 * atan2(sqrt(a), sqrt(1-a))
-    d = R * c
+errors = np.random.normal(loc=0, scale=1, size=N)  # 정규분포를 따르는 예시 에러 데이터
+a_errors = np.random.normal(loc=0, scale=1, size=N)
 
-    return d * 1000 #meter
+# 에러 값이 음수일 수 있으므로 0보다 작은 값은 제거
+errors = errors[errors >= 0]
 
-def dictionary_updater(cnt_dict, critia) -> None:
-    try:
-        cnt_dict[critia] += 1
-    except:
-        cnt_dict[critia] = 0
+# 에러의 최대값을 얻음
+max_error = np.max(errors)
 
-def main():
-    a = [1,2,3,4,5,6,7,8,9,10]
+# 히스토그램 그리기
+plt.hist(errors, bins=N,
+        #  range=(0, max_error),
+        #  edgecolor='black',
+         alpha=0.7,
+         label = 'a')
 
-    tmp = [i for i in a if i > 5]
-    print(tmp)
+plt.hist(a_errors, bins=N,
+        #  range=(0, max_error),
+        #  edgecolor='black',
+         alpha=0.7,
+         label = 'ab')
 
-if __name__ == '__main__':
-    main()
+plt.title("Error Distribution Histogram")
+plt.xlabel("Error Value")
+plt.ylabel("Frequency")
+plt.show()
