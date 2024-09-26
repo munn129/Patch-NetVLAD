@@ -28,11 +28,11 @@ def dictionary_updater(cnt_dict, critia) -> None:
 
 def main():
     direction = 'concat'
-    method = 'patch'
+    method = 'netvlad'
 
     # both lists must have same length
-    t_err_check_list = [0.25, 0.5, 5]
-    r_err_check_list = [2, 5, 10]
+    t_err_check_list = [1, 2.5, 5, 7.5, 10]
+    r_err_check_list = [1, 2.5, 5, 7.5, 10]
     if len(t_err_check_list) != len(r_err_check_list):
         raise Exception('check lists are not same length')
 
@@ -81,7 +81,24 @@ def main():
             file.write(f'{sentence}\n')
             print(sentence)
 
-        # translation error
+        file.write('\n')
+
+        # average translation error, min, max, median
+        file.write(f'########## TRANSLATION ERROR ##########\n')
+        file.write(f'average: {sum(translation_error_list)/len(translation_error_list)}\n')
+        file.write(f'min: {min(translation_error_list)}\n')
+        file.write(f'max: {max(translation_error_list)}\n')
+        file.write(f'median: {translation_error_list[int(len(translation_error_list)/2)]}\n')
+
+        # average rotation error
+        file.write(f'########## ROTATION ERROR ##########\n')
+        file.write(f'average: {sum(rotation_error_list)/len(rotation_error_list)}\n')
+        file.write(f'min: {min(rotation_error_list)}\n')
+        file.write(f'max: {max(rotation_error_list)}\n')
+        file.write(f'median: {rotation_error_list[int(len(rotation_error_list)/2)]}\n')
+
+        # trimmed translation error(critia: translation error)
+
 
     print(f'{direction}_{method} is saved')
 

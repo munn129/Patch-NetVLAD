@@ -19,11 +19,10 @@ def dictionary_updater(cnt_dict, critia) -> None:
         cnt_dict[critia] = 0
 
 def main():
-    tmp_dict ={}
+    a = [1,2,3,4,5,6,7,8,9,10]
 
-    tmp_dict['1m'] = 1
-    dictionary_updater(tmp_dict, 'das')
-    print(tmp_dict)
+    tmp = [i for i in a if i > 5]
+    print(tmp)
 
 if __name__ == '__main__':
     main()
