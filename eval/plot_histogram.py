@@ -5,6 +5,8 @@ import os
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 import matplotlib.pyplot as plt
+import numpy as np
+from scipy.stats import lognorm
 
 def main():
     direction = ['concat', 'front']
@@ -32,12 +34,19 @@ def main():
 
     for direc in direction:
         for mthd in method:
+            
+            data = error_list_dic[f'{direc}_{mthd}_translation'][error_list_dic[f'{direc}_{mthd}_translation'] < 20]
 
-            plt.hist(error_list_dic[f'{direc}_{mthd}_translation'],
-                     bins = 200,
+            shape, loc, scale = lognorm.fit(data, floc = 0)
+            pdf = np.linspace(min(data), max(data), len(data))
+            pdf_fitted = lognorm.pdf(pdf, shape, loc = loc, scale = scale)
+
+            plt.plot(pdf, pdf_fitted, label = 'log-normal')
+
+            plt.hist(data,
+                     bins = len(data),
                      alpha = 0.1,
-                     label = f'{direc}_{mthd}',
-                     range = (0, 50)
+                     label = f'{direc}_{mthd}'
                      )
     
 
@@ -46,8 +55,16 @@ def main():
     for direc in direction:
         for mthd in method:
 
-            plt.hist(error_list_dic[f'{direc}_{mthd}_rotation'],
-                     bins = 200,
+            data = error_list_dic[f'{direc}_{mthd}_rotation'][error_list_dic[f'{direc}_{mthd}_rotation'] < 10]
+
+            shape, loc, scale = lognorm.fit(data, floc = 0)
+            pdf = np.linspace(min(data), max(data), len(data))
+            pdf_fitted = lognorm.pdf(pdf, shape, loc = loc, scale = scale)
+
+            plt.plot(pdf, pdf_fitted, label = 'log-normal')
+
+            plt.hist(data,
+                     bins = len(data),
                      alpha = 0.1,
                      label = f'{direc}_{mthd}',
                      range = (0, 10)

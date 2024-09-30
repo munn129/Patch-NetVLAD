@@ -3,8 +3,9 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 import folium
 
-direction = 'concat'
-method = 'patch'
+direction = 'front'
+method = 'netvlad'
+std = 10
 
 gps_1 = f'../oxford_{direction}/0519_{direction}_gt.txt'
 gps_2 = f'../oxford_{direction}/0828_{direction}_gt.txt'
@@ -59,7 +60,7 @@ for coord in gps_1_list:
     
 for coord, err in zip(gps_1_list, error_list):
 
-    if err > 50:
+    if err > std:
         folium.CircleMarker(
             location=coord,
             radius=1.5,
