@@ -19,12 +19,12 @@ error_list = []
 with open(gps_1, 'r') as file:
     for line in file:
         line = line.split(' ')
-        gps_1_list.append((line[1], line[2]))  # (lon, lat)
+        gps_1_list.append((line[1], line[2]))  # (lat, lon)
 
 with open(gps_2, 'r') as file:
     for line in file:
         line = line.split(' ')
-        gps_2_list.append((line[1], line[2]))  # (lon, lat)
+        gps_2_list.append((line[1], line[2]))  # (lat, lon)
 
 with open(error, 'r') as file:
     for line in file:
