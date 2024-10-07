@@ -18,8 +18,8 @@ def txt_file_reader(dir, output_list):
             if l == '#': continue
             output_list.append(float(l))
 
-db_gps_dir = f'../oxford_front/0519_front_gt.txt'
-query_gps_dir = f'../oxford_front/0828_front_gt.txt'
+db_gps_dir = f'../oxford_front/0828_front_gt.txt'
+query_gps_dir = f'../oxford_front/0519_front_gt.txt'
 netvlad_error_dir = f'../oxford_front/netvlad_error.txt'
 patch_error_dir = f'../oxford_front/patch_error.txt'
 concat_error_dir = f'../oxford_concat/patch_error.txt'
@@ -40,6 +40,12 @@ gps_reader(db_gps_dir, db_gps_list) # len: 11358
 txt_file_reader(netvlad_error_dir, netvlad_error_list) # len: 11037
 txt_file_reader(patch_error_dir, patch_error_list) # len: 11037
 txt_file_reader(concat_error_dir, concat_error_list) # len: 11037
+
+print(len(query_gps_list))
+print(len(db_gps_list))
+print(len(netvlad_error_list))
+print(len(patch_error_list))
+print(len(concat_error_list))
 
 with open(query_gps_dir, 'r') as file:
     for line in file:
@@ -74,40 +80,40 @@ for coord in query_gps_list:
             # popup=str(coord)
         ).add_to(m)
 
-th = 100 # 100 [m]
+th = 500 # 100 [m]
 for gt, netvlad, patch, concat in zip(query_gps_list,
                                       netvlad_error_list,
                                       patch_error_list,
                                       concat_error_list):
     
-    # netvlad only
-    if netvlad > th and patch < th and concat < th:
-        folium.CircleMarker(
-            location = gt,
-            radius = 1.5,
-            color = 'green',
-            fill = False,
-            fill_opacity = 0.1,
-            popup = str(gt)
-        ).add_to(m)
+    # # netvlad only
+    # if netvlad > th and patch < th and concat < th:
+    #     folium.CircleMarker(
+    #         location = gt,
+    #         radius = 1.5,
+    #         color = 'green',
+    #         fill = False,
+    #         fill_opacity = 0.1,
+    #         popup = str(gt)
+    #     ).add_to(m)
 
-    # patchnetvlad only
-    if netvlad < th and patch > th and concat < th:
-        folium.CircleMarker(
-            location = gt,
-            radius = 2,
-            color = 'orange',
-            fill = False,
-            fill_opacity = 0.1,
-            popup = str(gt)
-        ).add_to(m)
+    # # patchnetvlad only
+    # if netvlad < th and patch > th and concat < th:
+    #     folium.CircleMarker(
+    #         location = gt,
+    #         radius = 2,
+    #         color = 'orange',
+    #         fill = False,
+    #         fill_opacity = 0.1,
+    #         popup = str(gt)
+    #     ).add_to(m)
 
     # concat only
     if netvlad < th and patch < th and concat > th:
         folium.CircleMarker(
             location = gt,
-            radius = 3,
-            color = 'black',
+            radius = 1,
+            color = 'orange',
             fill = False,
             fill_opacity = 0.1,
             popup = str(gt)
@@ -117,8 +123,8 @@ for gt, netvlad, patch, concat in zip(query_gps_list,
     if netvlad > th and patch > th and concat < th:
         folium.CircleMarker(
             location = gt,
-            radius = 4,
-            color = 'purple',
+            radius = 2.5,
+            color = 'green',
             fill = False,
             fill_opacity = 0.1,
             popup = str(gt)
