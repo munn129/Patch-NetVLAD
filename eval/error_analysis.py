@@ -28,7 +28,7 @@ def dictionary_updater(cnt_dict, critia) -> None:
 
 def main():
     direction = 'concat'
-    method = 'netvlad'
+    method = 'patch'
 
     # both lists must have same length
     t_err_check_list = [1, 2.5, 5, 7.5, 10]
@@ -36,7 +36,7 @@ def main():
     if len(t_err_check_list) != len(r_err_check_list):
         raise Exception('check lists are not same length')
 
-    folder = f'oxford_{direction}'
+    folder = f'new_ox/{direction}'
     file = f'{method}_error.txt'
     error_result_dir = os.path.join(folder, file)
 

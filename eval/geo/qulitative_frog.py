@@ -18,13 +18,13 @@ def txt_file_reader(dir, output_list):
             if l == '#': continue
             output_list.append(float(l))
 
-db_gps_dir = f'../oxford_front/0828_front_gt.txt'
-query_gps_dir = f'../oxford_front/0519_front_gt.txt'
-netvlad_error_dir = f'../oxford_front/netvlad_error.txt'
-patch_error_dir = f'../oxford_front/patch_error.txt'
-concat_error_dir = f'../oxford_concat/patch_error.txt'
+db_gps_dir = f'../new_ox/front/0519_front_gt.txt'
+query_gps_dir = f'../new_ox/front/0828_front_gt.txt'
+netvlad_error_dir = f'../new_ox/front/netvlad_error.txt'
+patch_error_dir = f'../new_ox/front/patch_error.txt'
+concat_error_dir = f'../new_ox/concat/patch_error.txt'
 
-q_concat_image_names_dir = f'../oxford_concat/0828_concat_gt.txt'
+q_concat_image_names_dir = f'../new_ox/concat/0828_concat_gt.txt'
 
 db_gps_list = []
 query_gps_list = []

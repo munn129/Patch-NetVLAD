@@ -173,12 +173,12 @@ class Evaluation:
 def main() -> None:
 
     position = 'concat'
-    dataset = f'oxford_{position}'
-    patch = False
+    dataset = f'new_ox/{position}'
+    patch = True
 
     result = Result(dataset, patch)
-    query = GPS(join(dataset, f'0519_{position}_gt.txt'))
-    db = GPS(join(dataset, f'0828_{position}_gt.txt'))
+    query = GPS(join(dataset, f'0828_{position}_gt.txt'))
+    db = GPS(join(dataset, f'0519_{position}_gt.txt'))
     eval = Evaluation(result, query, db)
     eval.error_calculator()
     if patch:
