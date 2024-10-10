@@ -39,3 +39,9 @@ python feature_match.py \
   --query_input_features_dir patchnetvlad/output_features/oxford_multiview/0828_front \
   --index_input_features_dir patchnetvlad/output_features/oxford_multiview/0519_front \
   --result_save_folder patchnetvlad/results/oxford/front_q_0828
+
+python feature_extract.py \
+  --config_path patchnetvlad/configs/cosplace.ini \
+  --dataset_file_path oxford/0519_concat_imagenames.txt \
+  --dataset_root_dir /media/moon/moon_ssd/moon_ubuntu/post_oxford \
+  --output_features_dir patchnetvlad/output_features/oxford_multiview/cosplace_test
