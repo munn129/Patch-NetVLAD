@@ -30,7 +30,7 @@ test_image_dir= '/home/moon/Documents/Patch-NetVLAD/patchnetvlad/tmp_images/1.jp
 
 def patch_netvlad_essential(image_tensor, device):
         # patch netvlad start
-    encoder_dim, encoder = get_backend()
+    encoder_dim, encoder = get_backend() # 512, nn.Sequential(*layers)
 
     checkpoint = torch.load(netvlad_pretrained_dir)
 
