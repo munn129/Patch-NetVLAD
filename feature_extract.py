@@ -84,42 +84,51 @@ def feature_extract(eval_set, model, device, opt, config, is_cosplace = False):
         tqdm_instance = tqdm(test_data_loader, position=1, leave=False, desc='Test Iter'.rjust(15))
 
         for iteration, (input_data, indices) in enumerate(tqdm_instance, 1):
+
+            # print(f'indices: {indices}')
+            # print(f'iter num: {iter_num}')
             
-            # processing time evaluation
-            start_time = time.time()
+                # processing time evaluation
+            if not is_cosplace:
+                start_time = time.time()
 
-            iter_num += 1
+                iter_num += 1
 
-            indices_np = indices.detach().numpy()
-            input_data = input_data.to(device)
-            image_encoding = model.encoder(input_data)
-            if config['global_params']['pooling'].lower() == 'patchnetvlad':
-                vlad_local, vlad_global = model.pool(image_encoding)
+                indices_np = indices.detach().numpy()
+                input_data = input_data.to(device)
+                image_encoding = model.encoder(input_data)
+                if config['global_params']['pooling'].lower() == 'patchnetvlad':
+                    vlad_local, vlad_global = model.pool(image_encoding)
 
-                vlad_global_pca = get_pca_encoding(model, vlad_global)
-                db_feat[indices_np, :] = vlad_global_pca.detach().cpu().numpy()
+                    vlad_global_pca = get_pca_encoding(model, vlad_global)
+                    db_feat[indices_np, :] = vlad_global_pca.detach().cpu().numpy()
 
-                for this_iter, this_local in enumerate(vlad_local):
-                    this_patch_size = model.pool.patch_sizes[this_iter]
+                    for this_iter, this_local in enumerate(vlad_local):
+                        this_patch_size = model.pool.patch_sizes[this_iter]
 
-                    db_feat_patches = np.empty((this_local.size(0), pool_size, this_local.size(2)),
-                                              dtype=np.float32)
-                    grid = np.indices((1, this_local.size(0)))
-                    this_local_pca = get_pca_encoding(model, this_local.permute(2, 0, 1).reshape(-1, this_local.size(1))).\
-                        reshape(this_local.size(2), this_local.size(0), pool_size).permute(1, 2, 0)
-                    db_feat_patches[grid, :, :] = this_local_pca.detach().cpu().numpy()
+                        db_feat_patches = np.empty((this_local.size(0), pool_size, this_local.size(2)),
+                                                dtype=np.float32)
+                        grid = np.indices((1, this_local.size(0)))
+                        this_local_pca = get_pca_encoding(model, this_local.permute(2, 0, 1).reshape(-1, this_local.size(1))).\
+                            reshape(this_local.size(2), this_local.size(0), pool_size).permute(1, 2, 0)
+                        db_feat_patches[grid, :, :] = this_local_pca.detach().cpu().numpy()
 
-                    for i, val in enumerate(indices_np):
-                        image_name = os.path.splitext(os.path.basename(eval_set.images[val]))[0]
-                        filename = output_local_features_prefix + '_' + 'psize{}_'.format(this_patch_size) + image_name + '.npy'
-                        np.save(filename, db_feat_patches[i, :, :])
-            else:
-                vlad_global = model.pool(image_encoding)
-                vlad_global_pca = get_pca_encoding(model, vlad_global)
-                db_feat[indices_np, :] = vlad_global_pca.detach().cpu().numpy()
+                        for i, val in enumerate(indices_np):
+                            image_name = os.path.splitext(os.path.basename(eval_set.images[val]))[0]
+                            filename = output_local_features_prefix + '_' + 'psize{}_'.format(this_patch_size) + image_name + '.npy'
+                            np.save(filename, db_feat_patches[i, :, :])
+                else:
+                    vlad_global = model.pool(image_encoding)
+                    vlad_global_pca = get_pca_encoding(model, vlad_global)
+                    db_feat[indices_np, :] = vlad_global_pca.detach().cpu().numpy()
 
-            # processing time evaluation
-            total_time = time.time() - start_time
+                # processing time evaluation
+                total_time = time.time() - start_time
+            
+            else: # is_cosplacer
+                iter_num += 1
+                db_feat = model(input_data.to(device))
+                db_feat = db_feat.cpu().numpy()
 
     np.save(output_global_features_filename, db_feat)
     # print("extract time: {}".format(avr_time))
@@ -160,15 +169,6 @@ def main():
 
     if not is_cosplace:
         encoder_dim, encoder = get_backend()
-    else:
-        encoder_dim = 512
-        encoder = nn.Sequential(
-            layers.L2Norm(),
-            layers.GeM(),
-            layers.Flatten(),
-            nn.Linear(2048, 512), # last ch of conv, output dim
-            layers.L2Norm()
-        )
 
     if not os.path.isfile(opt.dataset_file_path):
         opt.dataset_file_path = join(PATCHNETVLAD_ROOT_DIR, 'dataset_imagenames', opt.dataset_file_path)
@@ -212,9 +212,11 @@ def main():
             print("=> loaded checkpoint '{}'".format(resume_ckpt, ))
         else:
             raise FileNotFoundError("=> no checkpoint found at '{}'".format(resume_ckpt))
-    else:
+    
+    else: # is_cosplace
         resume_ckpt = config['global_params']['resumepath'] # pth file dir
         backbone = 'ResNet152'
+        encoder_dim = 512
         
         if not isfile(resume_ckpt):
             raise Exception('pth file is not exist')
@@ -222,10 +224,9 @@ def main():
         model = cosplace_network.GeoLocalizationNet(backbone, encoder_dim)
         model_state_dict = torch.load(resume_ckpt)
         model.load_state_dict(model_state_dict)
-        model.add_module('encoder', encoder)
         model.to(device)
 
-    feature_extract(dataset, model, device, opt, config)
+    feature_extract(dataset, model, device, opt, config, is_cosplace)
 
     torch.cuda.empty_cache()  # garbage clean GPU memory, a bug can occur when Pytorch doesn't automatically clear the
     # memory after runs

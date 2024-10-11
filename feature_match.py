@@ -101,7 +101,7 @@ def write_recalls_output(opt, recalls_netvlad, recalls_patchnetvlad, n_values):
             rec_out.write("Recall {}@{}: {:.4f}\n".format('PatchNetVLAD', n, recalls_patchnetvlad[n]))
 
 
-def feature_match(eval_set, device, opt, config):
+def feature_match(eval_set, device, opt, config, is_cosplace):
     input_query_local_features_prefix = join(opt.query_input_features_dir, 'patchfeats')
     input_query_global_features_prefix = join(opt.query_input_features_dir, 'globalfeats.npy')
     input_index_local_features_prefix = join(opt.index_input_features_dir, 'patchfeats')
@@ -152,13 +152,16 @@ def feature_match(eval_set, device, opt, config):
             _, predictions = faiss_index.search(qFeat, min(len(dbFeat), max(n_values)))
             print("========== predictions ==========")
             print(predictions)
+    
+    if not is_cosplace:
+        reranked_predictions = local_matcher(predictions, eval_set, input_query_local_features_prefix,
+                                            input_index_local_features_prefix, config, device)
 
-    reranked_predictions = local_matcher(predictions, eval_set, input_query_local_features_prefix,
-                                         input_index_local_features_prefix, config, device)
-
-    # save predictions to files - Kapture Output
-    write_kapture_output(opt, eval_set, predictions, 'NetVLAD_predictions.txt')
-    write_kapture_output(opt, eval_set, reranked_predictions, 'PatchNetVLAD_predictions.txt')
+        # save predictions to files - Kapture Output
+        write_kapture_output(opt, eval_set, predictions, 'NetVLAD_predictions.txt')
+        write_kapture_output(opt, eval_set, reranked_predictions, 'PatchNetVLAD_predictions.txt')
+    else: # is_cosplace
+        write_kapture_output(opt, eval_set, predictions, 'cosplace_predictions.txt')
 
     print('Finished matching features.')
 
@@ -194,9 +197,13 @@ def main():
     parser.add_argument('--result_save_folder', type=str, default='results')
     parser.add_argument('--posDistThr', type=int, default=None, help='Manually set ground truth threshold')
     parser.add_argument('--nocuda', action='store_true', help='If true, use CPU only. Else use GPU.')
+    parser.add_argument('--cosplace', type=bool, default=False)
+
 
     opt = parser.parse_args()
     print(opt)
+
+    is_cosplace = opt.cosplace
 
     configfile = opt.config_path
     assert os.path.isfile(configfile)
@@ -218,7 +225,7 @@ def main():
                            config['feature_extract'], posDistThr=opt.posDistThr)
 
     start_time = time.time()
-    feature_match(dataset, device, opt, config)
+    feature_match(dataset, device, opt, config, is_cosplace)
     end_time = time.time() - start_time
 
     torch.cuda.empty_cache()  # garbage clean GPU memory, a bug can occur when Pytorch doesn't automatically clear the

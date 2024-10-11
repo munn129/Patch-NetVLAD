@@ -12,4 +12,5 @@ python feature_match.py \
   --index_file_path cosplace_test.txt \
   --query_input_features_dir patchnetvlad/output_features/cosplace/test \
   --index_input_features_dir patchnetvlad/output_features/cosplace/test \
-  --result_save_folder patchnetvlad/results/cosplace/test
+  --result_save_folder patchnetvlad/results/cosplace/test \
+  --cosplace True
