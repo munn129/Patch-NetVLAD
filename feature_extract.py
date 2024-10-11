@@ -51,7 +51,11 @@ from patchnetvlad.tools.datasets import PlaceDataset
 from patchnetvlad.models.models_generic import get_backend, get_model, get_pca_encoding
 from patchnetvlad.tools import PATCHNETVLAD_ROOT_DIR
 
-def feature_extract(eval_set, model, device, opt, config):
+import sys
+sys.path.append('./cosplace')
+from cosplace.cosplace_model import cosplace_network, layers
+
+def feature_extract(eval_set, model, device, opt, config, is_cosplace = False):
 
     iter_num = 0
     avr_time = 0
@@ -135,12 +139,16 @@ def main():
     parser.add_argument('--output_features_dir', type=str, default=join(PATCHNETVLAD_ROOT_DIR, 'output_features'),
                         help='Path to store all patch-netvlad features')
     parser.add_argument('--nocuda', action='store_true', help='If true, use CPU only. Else use GPU.')
+    parser.add_argument('--cosplace', type=bool, default=False)
 
     opt = parser.parse_args()
     print(opt)
 
+    is_cosplace = opt.cosplace
+
     configfile = opt.config_path
-    assert os.path.isfile(configfile)
+    if not is_cosplace:
+        assert os.path.isfile(configfile)
     config = configparser.ConfigParser()
     config.read(configfile)
 
@@ -150,49 +158,72 @@ def main():
 
     device = torch.device("cuda" if cuda else "cpu")
 
-    encoder_dim, encoder = get_backend()
+    if not is_cosplace:
+        encoder_dim, encoder = get_backend()
+    else:
+        encoder_dim = 512
+        encoder = nn.Sequential(
+            layers.L2Norm(),
+            layers.GeM(),
+            layers.Flatten(),
+            nn.Linear(2048, 512), # last ch of conv, output dim
+            layers.L2Norm()
+        )
 
     if not os.path.isfile(opt.dataset_file_path):
         opt.dataset_file_path = join(PATCHNETVLAD_ROOT_DIR, 'dataset_imagenames', opt.dataset_file_path)
 
     dataset = PlaceDataset(None, opt.dataset_file_path, opt.dataset_root_dir, None, config['feature_extract'])
 
-    # must resume to do extraction
-    if config['global_params']['num_pcs'] != '0':
-        resume_ckpt = config['global_params']['resumePath'] + config['global_params']['num_pcs'] + '.pth.tar'
-    else:
-        resume_ckpt = config['global_params']['resumePath'] + '.pth.tar'
-
-    # backup: try whether resume_ckpt is relative to PATCHNETVLAD_ROOT_DIR
-    if not isfile(resume_ckpt):
-        resume_ckpt = join(PATCHNETVLAD_ROOT_DIR, resume_ckpt)
-        if not isfile(resume_ckpt):
-            from download_models import download_all_models
-            download_all_models(ask_for_permission=True)
-
-    if isfile(resume_ckpt):
-        print("=> loading checkpoint '{}'".format(resume_ckpt))
-        checkpoint = torch.load(resume_ckpt, map_location=lambda storage, loc: storage)
+    if not is_cosplace:
+        # must resume to do extraction
         if config['global_params']['num_pcs'] != '0':
-            assert checkpoint['state_dict']['WPCA.0.bias'].shape[0] == int(config['global_params']['num_pcs'])
-        config['global_params']['num_clusters'] = str(checkpoint['state_dict']['pool.centroids'].shape[0])
-
-        if config['global_params']['num_pcs'] != '0':
-            use_pca = True
+            resume_ckpt = config['global_params']['resumePath'] + config['global_params']['num_pcs'] + '.pth.tar'
         else:
-            use_pca = False
-        model = get_model(encoder, encoder_dim, config['global_params'], append_pca_layer=use_pca)
-        model.load_state_dict(checkpoint['state_dict'])
+            resume_ckpt = config['global_params']['resumePath'] + '.pth.tar'
+
+        # backup: try whether resume_ckpt is relative to PATCHNETVLAD_ROOT_DIR
+        if not isfile(resume_ckpt):
+            resume_ckpt = join(PATCHNETVLAD_ROOT_DIR, resume_ckpt)
+            if not isfile(resume_ckpt):
+                from download_models import download_all_models
+                download_all_models(ask_for_permission=True)
+
+        if isfile(resume_ckpt):
+            print("=> loading checkpoint '{}'".format(resume_ckpt))
+            checkpoint = torch.load(resume_ckpt, map_location=lambda storage, loc: storage)
+            if config['global_params']['num_pcs'] != '0':
+                assert checkpoint['state_dict']['WPCA.0.bias'].shape[0] == int(config['global_params']['num_pcs'])
+            config['global_params']['num_clusters'] = str(checkpoint['state_dict']['pool.centroids'].shape[0])
+
+            if config['global_params']['num_pcs'] != '0':
+                use_pca = True
+            else:
+                use_pca = False
+            model = get_model(encoder, encoder_dim, config['global_params'], append_pca_layer=use_pca)
+            model.load_state_dict(checkpoint['state_dict'])
+            
+            if int(config['global_params']['nGPU']) > 1 and torch.cuda.device_count() > 1:
+                model.encoder = nn.DataParallel(model.encoder)
+                # if opt.mode.lower() != 'cluster':
+                model.pool = nn.DataParallel(model.pool)
         
-        if int(config['global_params']['nGPU']) > 1 and torch.cuda.device_count() > 1:
-            model.encoder = nn.DataParallel(model.encoder)
-            # if opt.mode.lower() != 'cluster':
-            model.pool = nn.DataParallel(model.pool)
-       
-        model = model.to(device)
-        print("=> loaded checkpoint '{}'".format(resume_ckpt, ))
+            model = model.to(device)
+            print("=> loaded checkpoint '{}'".format(resume_ckpt, ))
+        else:
+            raise FileNotFoundError("=> no checkpoint found at '{}'".format(resume_ckpt))
     else:
-        raise FileNotFoundError("=> no checkpoint found at '{}'".format(resume_ckpt))
+        resume_ckpt = config['global_params']['resumepath'] # pth file dir
+        backbone = 'ResNet152'
+        
+        if not isfile(resume_ckpt):
+            raise Exception('pth file is not exist')
+        
+        model = cosplace_network.GeoLocalizationNet(backbone, encoder_dim)
+        model_state_dict = torch.load(resume_ckpt)
+        model.load_state_dict(model_state_dict)
+        model.add_module('encoder', encoder)
+        model.to(device)
 
     feature_extract(dataset, model, device, opt, config)
 
