@@ -172,20 +172,26 @@ class Evaluation:
             
 def main() -> None:
 
-    position = 'concat'
-    dataset = f'new_ox/{position}'
-    patch = True
+    gap_list = ['050', '075', '100', '125', '150']
+    patch = False
 
-    result = Result(dataset, patch)
-    query = GPS(join(dataset, f'0828_{position}_gt.txt'))
-    db = GPS(join(dataset, f'0519_{position}_gt.txt'))
-    eval = Evaluation(result, query, db)
-    eval.error_calculator()
-    if patch:
-        eval.save(f'{dataset}/patch_error.txt')
-    else:
-        eval.save(f'{dataset}/netvlad_error.txt')
-    eval.error_analysis()
+    for gap in gap_list:
+        condition = f'icrca/{gap}'
+        query_gt_dir = f'{condition}/0828_front_gt_{gap}.txt'
+        dataset_gt_dir = f'{condition}/0519_front_gt_{gap}.txt'
+
+        result = Result(condition, patch)
+        query = GPS(query_gt_dir)
+        db = GPS(dataset_gt_dir)
+        eval = Evaluation(result, query, db)
+        eval.error_calculator()
+        
+        if patch:
+            eval.save(f'{condition}/patch_error.txt')
+        else:
+            eval.save(f'{condition}/netvlad_error.txt')
+
+        eval.error_analysis()
     # eval.for_plot()
 
 if __name__ == '__main__':
