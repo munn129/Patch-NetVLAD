@@ -172,12 +172,12 @@ class Evaluation:
             
 def main() -> None:
 
-    gap_list = ['050', '075', '100', '125', '150']
-    patch = False
+    gap_list = ['200', '300', '400', '500']
+    patch = True
 
     for gap in gap_list:
         condition = f'icrca/{gap}'
-        query_gt_dir = f'{condition}/0828_front_gt_{gap}.txt'
+        query_gt_dir = f'{condition}/0828_front_gt_050.txt'
         dataset_gt_dir = f'{condition}/0519_front_gt_{gap}.txt'
 
         result = Result(condition, patch)

@@ -30,7 +30,7 @@ def main():
     # direction = 'concat'
     # folder = f'new_ox/{direction}'
 
-    gap_list = ['050', '075', '100', '125', '150']
+    gap_list = ['200', '300', '400', '500']
     method = 'patch'
 
     for direction in gap_list:
